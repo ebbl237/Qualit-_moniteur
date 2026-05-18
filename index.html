@@ -1209,6 +1209,32 @@ input,select,textarea{font-family:inherit}
 /* Modal user — amélioration visuelle */
 #modal-user .modal-body .um-pass-row{position:relative}
 #modal-user .modal-body .um-pass-row .um-pw-toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;padding:4px}
+
+/* ─── v11.2 UM Tabs ─── */
+.um-tab{padding:7px 16px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;transition:all .18s}
+.um-tab.active{background:var(--accent);color:#0B0D16;border-color:var(--accent)}
+.um-tab:hover:not(.active){border-color:var(--accent);color:var(--accent)}
+/* ─── Role builder ─── */
+.um-role-card{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:12px;overflow:hidden}
+.um-role-card-hdr{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border);background:var(--surface)}
+.um-role-card-hdr .role-name{font-weight:700;font-size:14px;flex:1}
+.um-role-card-body{padding:14px 16px}
+.um-perm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px;margin-bottom:10px}
+.um-perm-item{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;background:var(--surface);border:1px solid var(--border);font-size:12px;cursor:pointer;transition:all .15s}
+.um-perm-item:hover{border-color:var(--accent)}
+.um-perm-item input[type=checkbox]{accent-color:var(--accent);width:14px;height:14px;cursor:pointer;flex-shrink:0}
+.um-perm-item.checked{border-color:var(--accent);background:rgba(0,229,255,.06)}
+.um-section-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:10px 0 6px}
+.um-role-actions{display:flex;gap:6px}
+.um-btn-edit{padding:5px 12px;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;transition:all .15s}
+.um-btn-edit:hover{border-color:var(--accent);color:var(--accent)}
+.um-btn-del{padding:5px 12px;background:transparent;border:1px solid var(--border);color:var(--ko);border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;transition:all .15s}
+.um-btn-del:hover{border-color:var(--ko);background:rgba(239,68,68,.08)}
+.um-role-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:.04em}
+.um-role-badge.sys{background:rgba(0,229,255,.15);color:var(--accent)}
+.um-role-badge.custom{background:rgba(167,139,250,.15);color:#A78BFA}
+.um-perm-count{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace}
+
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -1224,7 +1250,7 @@ input,select,textarea{font-family:inherit}
     <div class="login-logo">Espace Qualité</div>
     <p class="login-sub">v11 · Plateforme KYPER by Exceliam</p>
     <div id="login-error" class="login-error">Identifiant ou mot de passe incorrect.</div>
-    <div class="form-group"><label>Identifiant</label><input type="text" id="login-user" placeholder="PRENOM@KYPER" autocomplete="off"></div>
+    <div class="form-group"><label>Identifiant</label><input type="text" id="login-user" placeholder="prenom@exceliam.ci" autocomplete="off"></div>
     <div class="form-group"><label>Mot de passe</label><input type="password" id="login-pass" placeholder="••••••••"></div>
     <div class="form-group"><label>Projet initial</label>
       <select id="login-project">
@@ -2423,22 +2449,44 @@ input,select,textarea{font-family:inherit}
           </div>
         </div>
 
-        <!-- v11 — Panel Création d'accès (Admin seulement) -->
+        <!-- v11.2 — Panel Création d'accès (Admin seulement) — Rôles illimités + permissions cases à cocher -->
         <div class="pm-panel" id="pm-panel-utilisateurs">
-          <div class="pm-section">
-            <div class="pm-section-title">🔐 Gestion des Accès Utilisateurs
-              <button class="pm-add-btn" onclick="pmOpenUserModal()">➕ Nouvel utilisateur</button>
+
+          <!-- ── Sous-onglets internes ── -->
+          <div style="display:flex;gap:6px;margin-bottom:18px;border-bottom:1px solid var(--border);padding-bottom:12px">
+            <button class="um-tab active" data-utab="users" onclick="umSwitchTab(this,'users')">👤 Utilisateurs</button>
+            <button class="um-tab" data-utab="roles" onclick="umSwitchTab(this,'roles')">🎭 Rôles & Permissions</button>
+          </div>
+
+          <!-- ── ONGLET UTILISATEURS ── -->
+          <div class="um-panel active" id="um-panel-users">
+            <div class="pm-section">
+              <div class="pm-section-title">🔐 Gestion des Accès
+                <div style="display:flex;gap:6px;margin-left:auto">
+                  <button class="pm-add-btn" onclick="pmOpenUserModal()">➕ Nouvel utilisateur</button>
+                </div>
+              </div>
+              <div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:12px;background:var(--surface);padding:10px 14px;border-radius:8px;border:1px solid var(--border)">
+                Format de connexion : <code style="background:var(--card);padding:1px 6px;border-radius:4px;font-family:'DM Mono',monospace;color:var(--accent)">prenom@exceliam.ci</code> &nbsp;·&nbsp;
+                <span style="color:var(--warn)">⚠ Admin :</span> <code style="background:var(--card);padding:1px 6px;border-radius:4px;font-family:'DM Mono',monospace">admin@exceliam.ci</code> / <code style="background:var(--card);padding:1px 6px;border-radius:4px;font-family:'DM Mono',monospace">kyper2025</code>
+                &nbsp;·&nbsp; Les rôles disponibles sont définis dans l'onglet <strong>Rôles & Permissions</strong>.
+              </div>
+              <div id="pm-users-wrap"></div>
             </div>
-            <div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:12px;background:var(--surface);padding:10px 14px;border-radius:8px;border:1px solid var(--border)">
-              <strong style="color:var(--text)">Créez ici les identifiants et mots de passe</strong> de chaque utilisateur. 5 rôles disponibles :
-              <span style="color:var(--ok)">●&nbsp;Administrateur</span> (tout accès) ·
-              <span style="color:var(--accent)">●&nbsp;Directeur Général</span> (supervision + historique) ·
-              <span style="color:#A78BFA">●&nbsp;Chef de Projet</span> (multi-projets) ·
-              <span style="color:var(--warn)">●&nbsp;Superviseur</span> (éval + coaching) ·
-              <span style="color:var(--muted)">●&nbsp;Téléconseiller</span> (lecture seule).<br>
-              <span style="color:var(--warn)">⚠ Accès Admin par défaut :</span> login <code style="background:var(--card);padding:1px 5px;border-radius:3px;font-family:'DM Mono',monospace">ADMIN@KYPER</code> · mot de passe <code style="background:var(--card);padding:1px 5px;border-radius:3px;font-family:'DM Mono',monospace">kyper2025</code> — à modifier dès la première connexion.
+          </div>
+
+          <!-- ── ONGLET RÔLES & PERMISSIONS ── -->
+          <div class="um-panel" id="um-panel-roles" style="display:none">
+            <div class="pm-section">
+              <div class="pm-section-title">🎭 Rôles Personnalisés
+                <button class="pm-add-btn" onclick="umOpenRoleModal(null)" style="margin-left:auto">➕ Créer un rôle</button>
+              </div>
+              <div style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6">
+                Créez autant de rôles que nécessaire. Pour chaque rôle, cochez les <strong>pages accessibles</strong> et les <strong>actions autorisées</strong>.
+                Les rôles système <em>(Administrateur)</em> sont protégés. Les rôles personnalisés sont entièrement configurables.
+              </div>
+              <div id="um-roles-wrap"></div>
             </div>
-            <div id="pm-users-wrap"></div>
           </div>
         </div>
 
@@ -2710,7 +2758,7 @@ input,select,textarea{font-family:inherit}
         <div class="form-group"><label>Matricule</label><input type="text" id="um-mat" placeholder="Optionnel"></div>
       </div>
       <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-        <div class="form-group"><label>Identifiant (login) *</label><input type="text" id="um-login" placeholder="FATIM@KYPER" style="text-transform:uppercase"></div>
+        <div class="form-group"><label>Identifiant (login) *</label><input type="text" id="um-login" placeholder="fatim@Exceliam.ci" style="text-transform:uppercase"></div>
         <div class="form-group"><label>Mot de passe *</label>
           <div class="um-pass-row" style="position:relative">
             <input type="password" id="um-pass" placeholder="••••••" autocomplete="new-password" style="padding-right:70px">
@@ -2723,13 +2771,10 @@ input,select,textarea{font-family:inherit}
       </div>
       <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
         <div class="form-group"><label>Rôle *</label>
-          <select id="um-role">
-            <option value="Administrateur">Administrateur (tout)</option>
-            <option value="Directeur Général">Directeur Général</option>
-            <option value="Chef de Projet">Chef de Projet</option>
-            <option value="Superviseur" selected>Superviseur</option>
-            <option value="Téléconseiller">Téléconseiller (agent)</option>
+          <select id="um-role" onchange="umPreviewRolePerms(this.value)">
+            <!-- Options chargées dynamiquement depuis umGetAllRoles() -->
           </select>
+          <div id="um-role-preview" style="font-size:10px;color:var(--muted);margin-top:5px;padding:6px 8px;background:var(--surface);border-radius:6px;display:none"></div>
         </div>
         <div class="form-group"><label>Projet principal</label>
           <select id="um-project">
@@ -2750,7 +2795,7 @@ input,select,textarea{font-family:inherit}
         </select>
       </div>
       <div style="font-size:11px;color:var(--muted);background:var(--surface);padding:10px;border-radius:8px;margin-top:8px">
-        ⚠️ L'identifiant doit être unique. Format recommandé : <code>PRENOM@KYPER</code>.
+        ⚠️ L'identifiant doit être unique. Format : <code>prenom@exceliam.ci</code>.
         Le mot de passe est visible en clair ici pour le transmettre à l'utilisateur — il peut le changer ensuite.
       </div>
     </div>
@@ -3414,12 +3459,12 @@ tmci:{
    USERS
 ═══════════════════════════════════════════════════════ */
 const USERS=[
-  {id:"basile",login:"BASILE@KYPER",pass:"basile",name:"Basile L. Edanga",role:"Directeur Général"},
-  {id:"sup1",  login:"ERIC@KYPER",  pass:"eric",  name:"Eric Kouassi",    role:"Superviseur"},
-  {id:"sup2",  login:"MARIE@KYPER", pass:"marie", name:"Marie Koffi",     role:"Superviseur"},
-  {id:"sup3",  login:"FATIM@KYPER", pass:"fatim", name:"Fatim Fadiga",    role:"Superviseur ILEK"},
-  {id:"cp1",   login:"PAUL@KYPER",  pass:"paul",  name:"Paul Brou",       role:"Chef de Projet"},
-  {id:"admin", login:"ADMIN@KYPER", pass:"kyper2025", name:"Admin KYPER", role:"Administrateur"},
+  {id:"basile",login:"basile@exceliam.ci",pass:"basile",name:"Basile L. Edanga",role:"Directeur Général"},
+  {id:"sup1",  login:"eric@exceliam.ci",  pass:"eric",  name:"Eric Kouassi",    role:"Superviseur"},
+  {id:"sup2",  login:"marie@exceliam.ci", pass:"marie", name:"Marie Koffi",     role:"Superviseur"},
+  {id:"sup3",  login:"fatim@exceliam.ci", pass:"fatim", name:"Fatim Fadiga",    role:"Superviseur ILEK"},
+  {id:"cp1",   login:"paul@exceliam.ci",  pass:"paul",  name:"Paul Brou",       role:"Chef de Projet"},
+  {id:"admin", login:"admin@exceliam.ci", pass:"kyper2025", name:"Admin KYPER", role:"Administrateur"},
 ];
 
 /* v11 — safeSet: null-safe DOM setter */
@@ -3499,20 +3544,28 @@ function defaultAgents(p){
    AUTH
 ═══════════════════════════════════════════════════════ */
 function doLogin(){
-  const u    = document.getElementById("login-user").value.trim().toUpperCase();
+  const uRaw = document.getElementById("login-user").value.trim();
+  /* Normalise : lowercase, accepte avec ou sans @Exceliam.ci */
+  const uNorm = uRaw.toLowerCase();
+  /* Si l'utilisateur tape juste "basile" on tente basile@exceliam.ci aussi */
+  const uAlt  = uNorm.includes('@') ? uNorm : uNorm + '@exceliam.ci';
   const pRaw = document.getElementById("login-pass").value.trim();
   const proj = document.getElementById("login-project").value;
   const errEl = document.getElementById("login-error");
-  if(!u||!pRaw){ errEl.textContent="Identifiant et mot de passe requis."; errEl.style.display="block"; return; }
+  if(!uNorm||!pRaw){ errEl.textContent="Identifiant et mot de passe requis."; errEl.style.display="block"; return; }
   const allUsers = (typeof getUsers==="function") ? getUsers() : USERS;
-  const user = allUsers.find(x =>
-    x.login.toUpperCase()===u &&
-    (x.pass===pRaw || x.pass.toLowerCase()===pRaw.toLowerCase())
-  );
+  const user = allUsers.find(x => {
+    const xLogin = x.login.toLowerCase();
+    const loginMatch = xLogin===uNorm || xLogin===uAlt ||
+      xLogin.split('@')[0]===uNorm || /* compatibilité @KYPER legacy */
+      xLogin===uNorm.replace('@kyper','@exceliam.ci');
+    const passMatch = x.pass===pRaw || x.pass.toLowerCase()===pRaw.toLowerCase();
+    return loginMatch && passMatch;
+  });
   if(!user){
     errEl.textContent="Identifiant ou mot de passe incorrect.";
     errEl.style.display="block";
-    try{ logLogin(null,false,'Login echoue login='+u); }catch(e){}
+    try{ logLogin({name:u,login:u,role:'Inconnu'},false,'Identifiants incorrects — login: '+u); }catch(e){}
     return;
   }
   if(user.statut==='Suspendu'){
@@ -11678,7 +11731,7 @@ const getUsers = () => {
       {
         id: 'admin_default',
         name: 'Administrateur KYPER',
-        login: 'ADMIN@KYPER',
+        login: 'admin@exceliam.ci',
         pass: 'kyper2025',
         role: 'Administrateur',
         project: 'all', equipe: '', mat: '', statut: 'Actif',
@@ -11696,13 +11749,13 @@ const getUsers = () => {
   }
 
   /* ── Migration : garantit qu'un compte ADMIN@KYPER existe toujours ── */
-  const adminIdx = stored.findIndex(u => u.login.toUpperCase() === 'ADMIN@KYPER');
+  const adminIdx = stored.findIndex(u => u.login.toLowerCase().startsWith('admin@'));
   if(adminIdx < 0){
     /* Aucun compte admin → on le crée */
     stored.unshift({
       id: 'admin_default',
       name: 'Administrateur KYPER',
-      login: 'ADMIN@KYPER',
+      login: 'admin@exceliam.ci',
       pass: 'kyper2025',
       role: 'Administrateur',
       project: 'all', equipe: '', mat: '', statut: 'Actif',
@@ -11715,6 +11768,17 @@ const getUsers = () => {
     stored[adminIdx].pass = 'kyper2025';
     store.set('kyper_users', stored);
   }
+
+  /* ── Migration v11.2 : @KYPER → @Exceliam.ci ── */
+  let migrated = false;
+  stored.forEach(u => {
+    if(u.login && u.login.toUpperCase().endsWith('@KYPER')){
+      const prenom = u.login.split('@')[0].toLowerCase();
+      u.login = prenom + '@Exceliam.ci';
+      migrated = true;
+    }
+  });
+  if(migrated) store.set('kyper_users', stored);
 
   return stored;
 };
@@ -11875,7 +11939,7 @@ function pmSaveUser(){
   const statut = document.getElementById('um-statut').value;
 
   if(!name || !login || !pass){ showToast('Nom, Login et Mot de passe obligatoires','ko'); return; }
-  if(!login.includes('@')){ showToast('Login doit contenir @ (ex: PRENOM@KYPER)','ko'); return; }
+  if(!login.includes('@') || !login.includes('.')){ showToast('Login invalide — format : prenom@exceliam.ci','ko'); return; }
 
   const users = getUsers();
   /* Vérifie unicité login */
@@ -11939,7 +12003,7 @@ function pmRenderLoginLog(){
       return `<tr>
         <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);white-space:nowrap">${dateStr}</td>
         <td><strong>${l.userName||'—'}</strong></td>
-        <td style="font-family:'DM Mono',monospace;font-size:11px">${l.userLogin||'—'}</td>
+        <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--accent)">${l.userLogin||'—'}</td>
         <td style="font-size:11px">${l.role||'—'}</td>
         <td>${l.success?'<span style="color:var(--ok)">✓ OK</span>':'<span style="color:var(--ko)">✗ KO</span>'}</td>
         <td style="font-size:11px;color:var(--muted)">${l.reason||'—'}</td>
@@ -12650,6 +12714,311 @@ function supClearHistory(){
 
   console.log('✅ KYPER v11 — Supervision temps réel chargée');
 })();
+
+/* ═══════════════════════════════════════════════════════
+   KYPER v11.2 — GESTION DES RÔLES DYNAMIQUES
+   Rôles illimités · Permissions par cases à cocher
+   Logs format : prenom@Exceliam.ci
+═══════════════════════════════════════════════════════ */
+
+/* ── Constantes pages et capacités ── */
+const UM_PAGES = [{"id": "dashboard", "label": "📊 Dashboard"}, {"id": "evaluation", "label": "📝 Évaluation"}, {"id": "history", "label": "📋 Historique"}, {"id": "agents", "label": "👥 Agents"}, {"id": "analyse", "label": "🔍 Analyse"}, {"id": "coaching", "label": "🎯 Coaching"}, {"id": "debrief", "label": "💬 Débrief"}, {"id": "collaborateur", "label": "👤 Collaborateur"}, {"id": "cloture", "label": "✅ Clôture"}, {"id": "coqual", "label": "🏆 COQUAL"}, {"id": "feedback", "label": "💡 Feedback"}, {"id": "amelioration", "label": "🛠 Amélioration"}, {"id": "reports", "label": "📈 Rapports"}, {"id": "parametres", "label": "⚙ Paramètres"}, {"id": "global", "label": "🌐 Vue Globale"}];
+const UM_CAPS  = [{"id": "canManageUsers", "label": "🔐 Gérer les utilisateurs"}, {"id": "canSeeHistory", "label": "📊 Voir l\u2019historique CX"}, {"id": "canSupervise", "label": "🖥 Supervision temps réel"}, {"id": "canDelete", "label": "🗑 Supprimer des données"}, {"id": "canExport", "label": "⬇ Exporter (CSV/PDF)"}, {"id": "canReset", "label": "⚠ Reset complet"}, {"id": "readOnly", "label": "👁 Mode lecture seule"}];
+
+/* ── Rôles système (protégés) ── */
+const UM_SYS_ROLES = {
+  'Administrateur':    {pages:'*',canManageUsers:true,canSeeHistory:true,canSupervise:true,canDelete:true,canExport:true,canReset:true},
+  'Directeur Général': {pages:'*',canManageUsers:false,canSeeHistory:true,canSupervise:true,canDelete:true,canExport:true,canReset:false},
+  'Chef de Projet':    {pages:['dashboard','evaluation','history','agents','analyse','coaching','debrief','collaborateur','cloture','coqual','feedback','amelioration','reports','parametres'],canManageUsers:false,canSeeHistory:false,canSupervise:false,canDelete:true,canExport:true,canReset:false},
+  'Superviseur':       {pages:['dashboard','evaluation','history','agents','coaching','debrief','collaborateur','cloture','feedback'],canManageUsers:false,canSeeHistory:false,canSupervise:false,canDelete:false,canExport:true,canReset:false},
+  'Téléconseiller':    {pages:['dashboard','history','debrief'],canManageUsers:false,canSeeHistory:false,canSupervise:false,canDelete:false,canExport:false,canReset:false,readOnly:true},
+};
+
+/* ── Storage rôles custom ── */
+const getCustomRoles = () => store.get('kyper_custom_roles', []);
+const saveCustomRoles = (d) => store.set('kyper_custom_roles', d);
+
+/* ── Obtenir TOUS les rôles (système + custom) ── */
+function umGetAllRoles() {
+  const sys = Object.keys(UM_SYS_ROLES).map(name => ({
+    name, sys: true, perms: UM_SYS_ROLES[name]
+  }));
+  const custom = getCustomRoles();
+  return [...sys, ...custom];
+}
+
+/* ── Obtenir les permissions d'un rôle ── */
+function umGetRolePerms(roleName) {
+  if(UM_SYS_ROLES[roleName]) return UM_SYS_ROLES[roleName];
+  const custom = getCustomRoles().find(r => r.name === roleName);
+  if(custom) return custom.perms;
+  /* Fallback : merge ROLE_PERMISSIONS existant */
+  return ROLE_PERMISSIONS[roleName] || ROLE_PERMISSIONS['Superviseur'];
+}
+
+/* ── Override ROLE_PERMISSIONS pour intégrer les rôles custom ── */
+function umBuildRolePermissions() {
+  const merged = Object.assign({}, UM_SYS_ROLES);
+  getCustomRoles().forEach(r => { merged[r.name] = r.perms; });
+  /* Patch dynamique de ROLE_PERMISSIONS */
+  Object.keys(merged).forEach(k => ROLE_PERMISSIONS[k] = merged[k]);
+}
+
+/* ── Tabs internes utilisateurs/roles ── */
+function umSwitchTab(btn, tab) {
+  document.querySelectorAll('.um-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.um-panel').forEach(p => p.style.display = 'none');
+  const panel = document.getElementById('um-panel-' + tab);
+  if(panel) panel.style.display = 'block';
+  if(tab === 'users')  pmRenderUsers();
+  if(tab === 'roles')  umRenderRoles();
+}
+
+/* ── Render tableau des rôles ── */
+function umRenderRoles() {
+  var wrap = document.getElementById('um-roles-wrap');
+  if(!wrap) return;
+  var all = umGetAllRoles();
+  var userCounts = {};
+  getUsers().forEach(function(u){ userCounts[u.role] = (userCounts[u.role]||0)+1; });
+  var html = '';
+  all.forEach(function(r) {
+    var perms  = r.perms || {};
+    var isSys  = !!r.sys;
+    var isStar = perms.pages === '*';
+    var pages  = isStar ? UM_PAGES.map(function(p){return p.id;}) : (Array.isArray(perms.pages)?perms.pages:[]);
+    var capCnt = UM_CAPS.filter(function(c){return !!perms[c.id];}).length;
+    var uc     = userCounts[r.name]||0;
+    var summary= (isStar?'🌐 Toutes les pages':pages.length+' page(s)')+' · '+capCnt+' capacité(s)'+(perms.readOnly?' · 👁 Lecture seule':'');
+
+    /* Bouton Supprimer : désactivé si des utilisateurs ont ce rôle */
+    var delBtn = uc > 0
+      ? '<button class="um-btn-del" disabled title="'+uc+' utilisateur(s) ont ce rôle">🗑</button>'
+      : '<button class="um-btn-del" onclick="umDeleteRole(\''+r.name+'\')">🗑</button>';
+
+    var actions = '<button class="um-btn-edit" onclick="umOpenRoleModal(\''+r.name+'\')">✏️ Modifier</button>'+delBtn;
+
+    var pagesHtml = UM_PAGES.map(function(pg){
+      var chk=isStar||pages.indexOf(pg.id)>=0;
+      return '<div class="um-perm-item'+(chk?' checked':'')+'"><input type="checkbox"'+(chk?' checked':'')+' disabled> <span>'+pg.label+'</span></div>';
+    }).join('');
+
+    var capsHtml = UM_CAPS.map(function(cap){
+      var chk=isStar?(cap.id!=='readOnly'):!!perms[cap.id];
+      return '<div class="um-perm-item'+(chk?' checked':'')+'"><input type="checkbox"'+(chk?' checked':'')+' disabled> <span>'+cap.label+'</span></div>';
+    }).join('');
+
+    html += '<div class="um-role-card">'
+      +'<div class="um-role-card-hdr">'
+      +'<span class="um-role-badge '+(isSys?'sys':'custom')+'">'+(isSys?'⚙ Système':'✏ Personnalisé')+'</span>'
+      +'<span class="role-name">'+r.name+'</span>'
+      +'<span class="um-perm-count">'+uc+' utilisateur'+(uc>1?'s':'')+' · '+summary+'</span>'
+      +'<div class="um-role-actions">'+actions+'</div>'
+      +'</div>'
+      +'<div class="um-role-card-body">'
+      +'<div class="um-section-label">Pages accessibles</div>'
+      +'<div class="um-perm-grid">'+pagesHtml+'</div>'
+      +'<div class="um-section-label">Capacités</div>'
+      +'<div class="um-perm-grid">'+capsHtml+'</div>'
+      +'</div></div>';
+  });
+  wrap.innerHTML = html;
+}
+
+
+/* ── Preview permissions dans le select rôle utilisateur ── */
+function umPreviewRolePerms(roleName) {
+  const el = document.getElementById('um-role-preview');
+  if(!el) return;
+  if(!roleName) { el.style.display='none'; return; }
+  const perms = umGetRolePerms(roleName);
+  const isStar = perms.pages === '*';
+  const pages = isStar ? UM_PAGES.map(p=>p.id) : (Array.isArray(perms.pages)?perms.pages:[]);
+  const caps = UM_CAPS.filter(c => !!perms[c.id]).map(c=>c.label);
+  el.style.display = 'block';
+  el.innerHTML = '📋 <strong>' + (isStar?'Toutes les pages':pages.length+' page(s)') + '</strong> · ' +
+    caps.join(' · ') + (perms.readOnly?' · 👁 Lecture seule':'');
+}
+
+/* ── Remplir le select rôle dans le modal utilisateur ── */
+function umFillRoleSelect(selectedRole) {
+  const sel = document.getElementById('um-role');
+  if(!sel) return;
+  const all = umGetAllRoles();
+  sel.innerHTML = all.map(r =>
+    `<option value="${r.name}" ${r.name===selectedRole?'selected':''}>${r.name}${r.sys?' (système)':' (personnalisé)'}</option>`
+  ).join('');
+  umPreviewRolePerms(sel.value);
+}
+
+/* ── MODAL RÔLE — Créer / Modifier ── */
+let _umRoleEditName = null;
+
+function umOpenRoleModal(roleName, readOnly) {
+  _umRoleEditName = roleName;
+  var all      = umGetAllRoles();
+  var existing = roleName ? all.find(function(r){return r.name===roleName;}) : null;
+  var perms    = (existing && existing.perms) ? existing.perms : {};
+  var isStar   = perms.pages === '*';
+  var pages    = isStar ? UM_PAGES.map(function(p){return p.id;}) : (Array.isArray(perms.pages)?perms.pages:[]);
+  var isRO     = !!readOnly;
+
+  var nameField = '<div class="form-group"><label>Nom du rôle *</label>'
+    +'<input type="text" id="um-role-name" value="'+(roleName||'')+'" '
+    +'placeholder="Ex: Responsable Formation" maxlength="50"'+(isRO?' readonly':'')+' style="text-transform:capitalize"></div>';
+
+  var selBtns = isRO ? '' :
+    '<div style="display:flex;gap:8px;margin-bottom:8px">'
+    +'<button type="button" onclick="umCheckAllPages(true)" style="padding:4px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;font-size:11px;cursor:pointer;color:var(--muted)">Tout cocher</button>'
+    +'<button type="button" onclick="umCheckAllPages(false)" style="padding:4px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;font-size:11px;cursor:pointer;color:var(--muted)">Tout décocher</button>'
+    +'</div>';
+
+  var pagesHtml = UM_PAGES.map(function(pg){
+    var chk=isStar||pages.indexOf(pg.id)>=0;
+    var onchg=isRO?'':' onchange="if(this.checked)this.closest(\'.um-perm-item\').classList.add(\'checked\');else this.closest(\'.um-perm-item\').classList.remove(\'checked\')"';
+    var olbl=isRO?'':' onclick="if(!this.querySelector(\'input\').disabled)this.classList.toggle(\'checked\')"';
+    return '<label class="um-perm-item'+(chk?' checked':'')+'"'+olbl+'>'
+      +'<input type="checkbox" id="ump-p-'+pg.id+'" name="um-page" value="'+pg.id+'"'+(chk?' checked':'')+(isRO?' disabled':'')+onchg+'>'
+      +' <span>'+pg.label+'</span></label>';
+  }).join('');
+
+  var capsHtml = UM_CAPS.map(function(cap){
+    var chk=isStar?(cap.id!=='readOnly'):!!perms[cap.id];
+    var onchg=isRO?'':' onchange="if(this.checked)this.closest(\'.um-perm-item\').classList.add(\'checked\');else this.closest(\'.um-perm-item\').classList.remove(\'checked\')"';
+    var olbl=isRO?'':' onclick="if(!this.querySelector(\'input\').disabled)this.classList.toggle(\'checked\')"';
+    return '<label class="um-perm-item'+(chk?' checked':'')+'"'+olbl+'>'
+      +'<input type="checkbox" id="ump-c-'+cap.id+'" name="um-cap" value="'+cap.id+'"'+(chk?' checked':'')+(isRO?' disabled':'')+onchg+'>'
+      +' <span>'+cap.label+'</span></label>';
+  }).join('');
+
+  var html = nameField
+    +'<div class="um-section-label">✅ Pages accessibles'+(isRO?' (lecture seule)':' — cochez les accès')+'</div>'
+    +selBtns
+    +'<div class="um-perm-grid" style="margin-bottom:14px">'+pagesHtml+'</div>'
+    +'<div class="um-section-label">🔑 Capacités'+(isRO?' (lecture seule)':' — cochez les actions')+'</div>'
+    +'<div class="um-perm-grid">'+capsHtml+'</div>';
+
+  var mo      = document.getElementById('modal-user');
+  if(!mo){alert('Modal introuvable');return;}
+  var titleEl  = document.getElementById('user-modal-title');
+  var bodyEl   = mo.querySelector('.modal-body');
+  var footerEl = mo.querySelector('.modal-footer');
+  if(titleEl) titleEl.textContent = roleName ? '✏️ Modifier : '+roleName : '🎭 Nouveau Rôle';
+  if(bodyEl)  bodyEl.innerHTML = html;
+  if(footerEl){
+    footerEl.innerHTML = !isRO
+      ? '<button class="btn-cancel" onclick="closeModal(\'modal-user\')">Annuler</button>'
+        +'<button class="btn-confirm" onclick="umSaveRole()">Enregistrer</button>'
+      : '<button class="btn-confirm" onclick="closeModal(\'modal-user\')">Fermer</button>';
+  }
+  openModal('modal-user');
+}
+
+
+/* ── Check/uncheck all pages ── */
+function umCheckAllPages(state) {
+  document.querySelectorAll('input[name="um-page"]').forEach(cb => {
+    cb.checked = state;
+    const item = cb.closest('.um-perm-item');
+    if(item) state ? item.classList.add('checked') : item.classList.remove('checked');
+  });
+}
+
+/* ── Sauvegarder un rôle custom ── */
+function umSaveRole() {
+  const nameEl = document.getElementById('um-role-name');
+  const name = nameEl ? nameEl.value.trim() : '';
+  if(!name) { showToast('Nom du rôle requis','ko'); return; }
+  /* Tous les rôles peuvent être modifiés (système inclus) */
+
+  /* Collecter pages cochées */
+  const pages = [];
+  document.querySelectorAll('input[name="um-page"]:checked').forEach(cb => pages.push(cb.value));
+
+  /* Collecter capacités cochées */
+  const caps = {};
+  UM_CAPS.forEach(c => {
+    const cb = document.getElementById('ump-c-' + c.id);
+    if(cb) caps[c.id] = cb.checked;
+  });
+
+  const perms = { pages, ...caps };
+
+  /* Enregistrer */
+  const customs = getCustomRoles();
+  if(_umRoleEditName && _umRoleEditName !== name) {
+    /* Renommage : MAJ tous les utilisateurs avec l'ancien rôle */
+    const users = getUsers();
+    users.forEach(u => { if(u.role === _umRoleEditName) u.role = name; });
+    saveUsers(users);
+    const idx = customs.findIndex(r => r.name === _umRoleEditName);
+    if(idx >= 0) customs.splice(idx, 1);
+  } else {
+    const idx = customs.findIndex(r => r.name === name);
+    if(idx >= 0) customs.splice(idx, 1);
+  }
+  customs.push({ name, sys: false, perms });
+  saveCustomRoles(customs);
+  /* Patch UM_SYS_ROLES si rôle système modifié */
+  var editedName = _umRoleEditName || name;
+  if(UM_SYS_ROLES[editedName]){ UM_SYS_ROLES[name] = perms; if(editedName!==name) delete UM_SYS_ROLES[editedName]; }
+  umBuildRolePermissions();
+
+  closeModal('modal-user');
+  pmRenderUsers();
+  umRenderRoles();
+  showToast(`Rôle "${name}" enregistré (${pages.length} pages, ${Object.values(caps).filter(Boolean).length} capacités)`,'ok');
+}
+
+/* ── Supprimer un rôle custom ── */
+function umDeleteRole(name) {
+  var uc = getUsers().filter(function(u){return u.role===name;}).length;
+  if(uc>0){showToast('Impossible : '+uc+' utilisateur(s) ont ce rôle — retirez-les d\'abord','ko');return;}
+  if(!confirm('Supprimer définitivement le rôle "'+name+'" ?')) return;
+  var customs = getCustomRoles().filter(function(r){return r.name!==name;});
+  saveCustomRoles(customs);
+  if(UM_SYS_ROLES[name]) delete UM_SYS_ROLES[name];
+  if(ROLE_PERMISSIONS[name]) delete ROLE_PERMISSIONS[name];
+  umBuildRolePermissions();
+  umRenderRoles();
+  showToast('Rôle "'+name+'" supprimé','ok');
+}
+
+/* ── OVERRIDE pmOpenUserModal pour remplir dynamiquement le select rôle ── */
+const _origPmOpenUserModal = window.pmOpenUserModal;
+window.pmOpenUserModal = function(id) {
+  if(_origPmOpenUserModal) _origPmOpenUserModal.call(this, id);
+  /* Remplir select avec tous les rôles */
+  const users = getUsers();
+  const user = id ? users.find(u => u.id === id) : null;
+  setTimeout(() => {
+    umFillRoleSelect(user ? user.role : 'Superviseur');
+  }, 0);
+};
+
+/* ── UPDATE logLogin pour format prenom@Exceliam.ci ── */
+const _origLogLogin = window.logLogin;
+window.logLogin = function(user, success, reason) {
+  const log = getLoginLog();
+  const loginFmt = user ? (user.login || user.name || '') : (reason||'inconnu');
+  log.push({
+    ts: new Date().toISOString(),
+    userName: user ? user.name : (reason||'Inconnu'),
+    userLogin: loginFmt,          /* stocké tel quel — déjà au format prenom@Exceliam.ci */
+    role: user ? user.role : '',
+    success: !!success,
+    reason: reason || (success ? 'OK' : 'Identifiants invalides'),
+  });
+  if(log.length > 500) log.splice(0, log.length - 500);
+  saveLoginLog(log);
+};
+
+/* ── Rebuild permissions au chargement ── */
+(function umInit() {
+  umBuildRolePermissions();
+})();
+
 </script>
 </body>
 </html>
