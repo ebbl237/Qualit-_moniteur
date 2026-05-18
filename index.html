@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Exceliam · Dashboard Qualité Multi-Projets (v9)</title>
+<title>Exceliam · Dashboard Qualité Multi-Projets (v11)</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0B0D16;--surface:#13162A;--card:#1A1E35;--border:#252A45;--text:#E8EAF2;--muted:#6B7280;--accent:#00E5FF;--ok:#22C55E;--ko:#EF4444;--warn:#F59E0B;--sidebar-w:248px;--topbar-h:60px;--radius:10px;--transition:.22s cubic-bezier(.4,0,.2,1);--brand-navy:#003c64;--brand-gold:#C9A84C}
@@ -22,28 +22,30 @@ button{cursor:pointer;font-family:inherit}
 input,select,textarea{font-family:inherit}
 ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:var(--surface)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 
-/* LOGIN v9 — Exceliam branding (navy haut / blanc bas) */
-#login-screen{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;overflow-y:auto;transition:opacity .4s,visibility .4s;background:linear-gradient(to bottom,#1B3754 0%,#1B3754 42%,#FFFFFF 42%,#FFFFFF 100%)}
+/* LOGIN v11 — Exceliam branding — Tient dans un écran sans scroll */
+#login-screen{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;transition:opacity .4s,visibility .4s;background:linear-gradient(to bottom,#1B3754 0%,#1B3754 38%,#FFFFFF 38%,#FFFFFF 100%)}
 #login-screen.hidden{opacity:0;visibility:hidden;pointer-events:none}
-.login-brand-banner{width:100%;padding:48px 20px 28px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
-.login-brand-banner img{max-width:340px;width:80%;height:auto;display:block;margin-bottom:14px;border-radius:4px;filter:drop-shadow(0 6px 22px rgba(0,0,0,.28))}
-.login-brand-tagline{color:rgba(255,255,255,.88);font-family:'Syne',sans-serif;font-size:14px;font-weight:600;letter-spacing:.06em}
-.login-wrap{width:400px;max-width:92vw;background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:36px 36px 32px;position:relative;overflow:hidden;box-shadow:0 22px 64px -18px rgba(15,33,56,.4),0 4px 12px rgba(15,33,56,.08);margin-top:6px;z-index:2}
+.login-brand-banner{width:100%;padding:16px 20px 10px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;flex-shrink:0}
+.login-brand-banner img{max-width:180px;width:60%;height:auto;display:block;margin-bottom:6px;border-radius:4px;filter:drop-shadow(0 4px 12px rgba(0,0,0,.28))}
+.login-brand-tagline{color:rgba(255,255,255,.88);font-family:'Syne',sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em}
+.login-wrap{width:400px;max-width:92vw;background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;padding:22px 28px 18px;position:relative;overflow:hidden;box-shadow:0 16px 48px -12px rgba(15,33,56,.4),0 4px 12px rgba(15,33,56,.08);margin-top:8px;z-index:2;flex-shrink:0}
 .login-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#1B3754 0%,#3183C5 50%,#1B3754 100%)}
 .login-wrap .form-group label{color:#475569}
 .login-wrap .form-group input,.login-wrap .form-group select{background:#F8FAFC;color:#0F172A;border-color:#E2E8F0}
 .login-wrap .form-group input:focus,.login-wrap .form-group select:focus{border-color:#3183C5;box-shadow:0 0 0 3px rgba(49,131,197,.15)}
 .login-wrap .btn-primary{background:#1B3754;color:#FFFFFF}
 .login-wrap .btn-primary:hover{background:#0F2138;opacity:1}
-.login-logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:-.4px;margin-bottom:4px;color:#1B3754;text-align:center}
-.login-sub{color:#64748B;font-size:12px;margin-bottom:26px;text-align:center;line-height:1.5}
-.login-hint{color:#94A3B8;font-size:11px;text-align:center;margin-top:16px}
+.login-logo{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;letter-spacing:-.4px;margin-bottom:2px;color:#1B3754;text-align:center}
+.login-sub{color:#64748B;font-size:11px;margin-bottom:16px;text-align:center;line-height:1.4}
+.login-hint{color:#94A3B8;font-size:10px;text-align:center;margin-top:10px}
 .login-hint code{color:#1B3754;background:#F1F5F9;padding:2px 6px;border-radius:4px;font-family:'DM Mono',monospace;font-size:10px}
+/* Réduit le spacing interne sur login */
+#login-screen .form-group{margin-bottom:11px}
 @media (max-width:600px){
-  #login-screen{background:linear-gradient(to bottom,#1B3754 0%,#1B3754 38%,#FFFFFF 38%,#FFFFFF 100%)}
-  .login-brand-banner{padding:32px 16px 20px}
-  .login-brand-banner img{max-width:260px}
-  .login-wrap{padding:28px 22px}
+  #login-screen{background:linear-gradient(to bottom,#1B3754 0%,#1B3754 34%,#FFFFFF 34%,#FFFFFF 100%)}
+  .login-brand-banner{padding:12px 16px 8px}
+  .login-brand-banner img{max-width:140px}
+  .login-wrap{padding:18px 18px 14px}
 }
 .form-group{margin-bottom:18px}
 .form-group label{display:block;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
@@ -1178,6 +1180,35 @@ input,select,textarea{font-family:inherit}
 .flash-voc-bullets li{padding:3px 0}
 .flash-voc-bullets li::before{content:"▸ ";color:#E30613;font-weight:700}
 
+
+/* ═══ SUPERVISION TEMPS RÉEL v11 ═══ */
+.sup-kpi{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 18px;min-width:140px;flex:1}
+.sup-kpi-val{font-family:'DM Mono',monospace;font-size:26px;font-weight:500;line-height:1}
+.sup-kpi-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:4px}
+.sup-kpi.online .sup-kpi-val{color:var(--ok)}
+.sup-kpi.offline .sup-kpi-val{color:var(--muted)}
+.sup-kpi.total .sup-kpi-val{color:var(--accent)}
+.sup-session-row{display:flex;align-items:center;gap:12px;padding:11px 14px;background:var(--card);border:1px solid var(--border);border-radius:9px;margin-bottom:7px;transition:border-color .2s}
+.sup-session-row:hover{border-color:var(--project-color,var(--accent))}
+.sup-session-row.online{border-left:3px solid var(--ok)}
+.sup-session-row.offline{border-left:3px solid var(--border);opacity:.65}
+.sup-presence-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.sup-presence-dot.online{background:var(--ok);box-shadow:0 0 0 3px rgba(34,197,94,.2);animation:supPulse 2s infinite}
+.sup-presence-dot.offline{background:var(--muted)}
+@keyframes supPulse{0%,100%{box-shadow:0 0 0 3px rgba(34,197,94,.2)}50%{box-shadow:0 0 0 6px rgba(34,197,94,.05)}}
+.sup-user-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--ok),#A78BFA);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:#0B0D16;flex-shrink:0}
+.sup-user-avatar.offline{background:var(--border)}
+.sup-user-info{flex:1;min-width:0}
+.sup-user-name{font-weight:600;font-size:13px}
+.sup-user-meta{font-size:11px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;margin-top:2px}
+.sup-badge-project{display:inline-flex;align-items:center;padding:2px 7px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(0,229,255,.1);color:var(--accent);border:1px solid rgba(0,229,255,.2)}
+.sup-time-block{text-align:right;flex-shrink:0}
+.sup-duration{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:var(--text)}
+.sup-login-time{font-size:10px;color:var(--muted);margin-top:2px}
+.sup-empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:13px}
+/* Modal user — amélioration visuelle */
+#modal-user .modal-body .um-pass-row{position:relative}
+#modal-user .modal-body .um-pass-row .um-pw-toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;padding:4px}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -1191,7 +1222,7 @@ input,select,textarea{font-family:inherit}
   </div>
   <div class="login-wrap">
     <div class="login-logo">Espace Qualité</div>
-    <p class="login-sub">v9 · Plateforme KYPER by Exceliam</p>
+    <p class="login-sub">v11 · Plateforme KYPER by Exceliam</p>
     <div id="login-error" class="login-error">Identifiant ou mot de passe incorrect.</div>
     <div class="form-group"><label>Identifiant</label><input type="text" id="login-user" placeholder="PRENOM@KYPER" autocomplete="off"></div>
     <div class="form-group"><label>Mot de passe</label><input type="password" id="login-pass" placeholder="••••••••"></div>
@@ -1203,7 +1234,6 @@ input,select,textarea{font-family:inherit}
       </select>
     </div>
     <button class="btn-primary" onclick="doLogin()">Connexion</button>
-    <p class="login-hint">Format : <code>PRENOM@KYPER</code> — Pass : votre prénom en minuscules</p>
   </div>
 </div>
 
@@ -1220,6 +1250,7 @@ input,select,textarea{font-family:inherit}
     </div>
     <div class="sidebar-nav">
       <div class="nav-section-label">Navigation</div>
+      <div class="nav-item nav-admin-dir" data-page="global" onclick="goPage('global')" style="display:none"><span class="nav-icon">🌐</span> Vue Globale <span class="nav-badge" style="background:var(--brand-gold);color:#0B0D16">ADM</span></div>
       <div class="nav-item active" data-page="dashboard" onclick="goPage('dashboard')"><span class="nav-icon">📊</span> Dashboard</div>
       <div class="nav-item" data-page="evaluation" onclick="goPage('evaluation')"><span class="nav-icon">🎧</span> Nouvelle Évaluation</div>
       <div class="nav-item" data-page="history" onclick="goPage('history')"><span class="nav-icon">📋</span> Historique<span class="nav-badge" id="history-badge">0</span></div>
@@ -2310,7 +2341,9 @@ input,select,textarea{font-family:inherit}
 
         <div class="pm-tabs">
           <button class="pm-tab active" data-pm="equipes" onclick="switchPmPanel('equipes')">👥 Équipes</button>
-          <button class="pm-tab pm-admin-only" data-pm="utilisateurs" onclick="switchPmPanel('utilisateurs')" style="display:none">🔐 Utilisateurs</button>
+          <button class="pm-tab pm-admin-only" data-pm="utilisateurs" onclick="switchPmPanel('utilisateurs')" style="display:none">🔐 Création d'accès</button>
+          <button class="pm-tab pm-history-visible" data-pm="historique-cx" onclick="switchPmPanel('historique-cx')" style="display:none">📊 Historique connexions</button>
+          <button class="pm-tab pm-supervision-visible" data-pm="supervision" onclick="switchPmPanel('supervision')" style="display:none">🖥️ Supervision <span id="sup-live-badge" class="nav-badge" style="background:#22C55E;display:none">0</span></button>
           <button class="pm-tab" data-pm="objectifs" onclick="switchPmPanel('objectifs')">🎯 Objectifs</button>
           <button class="pm-tab" data-pm="projets" onclick="switchPmPanel('projets')">📦 Projets</button>
           <button class="pm-tab" data-pm="systeme" onclick="switchPmPanel('systeme')">🛡 Système</button>
@@ -2390,28 +2423,75 @@ input,select,textarea{font-family:inherit}
           </div>
         </div>
 
-        <!-- v8 — Panel Utilisateurs (Admin seulement) -->
+        <!-- v11 — Panel Création d'accès (Admin seulement) -->
         <div class="pm-panel" id="pm-panel-utilisateurs">
           <div class="pm-section">
-            <div class="pm-section-title">🔐 Gestion des Utilisateurs & Accès
+            <div class="pm-section-title">🔐 Gestion des Accès Utilisateurs
               <button class="pm-add-btn" onclick="pmOpenUserModal()">➕ Nouvel utilisateur</button>
             </div>
-            <div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:12px">
-              L'administrateur crée les identifiants, mots de passe et niveaux d'accès des utilisateurs.
-              <strong style="color:var(--text)">5 rôles disponibles :</strong>
-              <span style="color:var(--ok)">Administrateur</span> (tout) ·
-              <span style="color:var(--accent)">Directeur</span> (tout sauf gestion users) ·
-              <span style="color:#A78BFA">Chef de Projet</span> (multi-projets) ·
-              <span style="color:var(--warn)">Superviseur</span> (évaluations, coaching, débrief, son équipe) ·
-              <span style="color:var(--muted)">Téléconseiller</span> (lecture seule, propres évals).
-              <br><strong style="color:var(--text)">Mots de passe :</strong> stockés en local (localStorage). Pour un usage en prod, exporter régulièrement la base via Sauvegarde système.
+            <div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:12px;background:var(--surface);padding:10px 14px;border-radius:8px;border:1px solid var(--border)">
+              <strong style="color:var(--text)">Créez ici les identifiants et mots de passe</strong> de chaque utilisateur. 5 rôles disponibles :
+              <span style="color:var(--ok)">●&nbsp;Administrateur</span> (tout accès) ·
+              <span style="color:var(--accent)">●&nbsp;Directeur Général</span> (supervision + historique) ·
+              <span style="color:#A78BFA">●&nbsp;Chef de Projet</span> (multi-projets) ·
+              <span style="color:var(--warn)">●&nbsp;Superviseur</span> (éval + coaching) ·
+              <span style="color:var(--muted)">●&nbsp;Téléconseiller</span> (lecture seule).<br>
+              <span style="color:var(--warn)">⚠ Accès Admin par défaut :</span> login <code style="background:var(--card);padding:1px 5px;border-radius:3px;font-family:'DM Mono',monospace">ADMIN@KYPER</code> · mot de passe <code style="background:var(--card);padding:1px 5px;border-radius:3px;font-family:'DM Mono',monospace">kyper2025</code> — à modifier dès la première connexion.
             </div>
             <div id="pm-users-wrap"></div>
-            <div class="pm-section-title" style="margin-top:20px">📊 Journal des connexions
-              <button class="pm-add-btn" style="background:var(--surface);color:var(--text);border:1px solid var(--border)" onclick="pmClearLoginLog()">🗑 Vider</button>
-              <button class="pm-add-btn" style="background:var(--surface);color:var(--text);border:1px solid var(--border)" onclick="pmExportLoginLog()">⬇ Exporter CSV</button>
+          </div>
+        </div>
+
+        <!-- v11 — Panel Historique connexions (Admin + Directeur) -->
+        <div class="pm-panel" id="pm-panel-historique-cx">
+          <div class="pm-section">
+            <div class="pm-section-title">📊 Journal des Connexions
+              <div style="display:flex;gap:6px;margin-left:auto">
+                <button class="pm-add-btn" style="background:var(--surface);color:var(--text);border:1px solid var(--border)" onclick="pmClearLoginLog()">🗑 Vider</button>
+                <button class="pm-add-btn" onclick="pmExportLoginLog()">⬇ Exporter CSV</button>
+              </div>
             </div>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Journal circulaire des 500 dernières tentatives de connexion (succès et échecs). Visible par l'Administrateur et le Directeur Général.</div>
             <div id="pm-login-log"></div>
+          </div>
+        </div>
+
+        <!-- v11 — Panel Supervision temps réel (Admin seulement) -->
+        <div class="pm-panel" id="pm-panel-supervision">
+          <div class="pm-section">
+            <div class="pm-section-title">🖥️ Supervision Temps Réel
+              <div style="display:flex;gap:6px;align-items:center;margin-left:auto">
+                <span id="sup-last-refresh" style="font-size:10px;color:var(--muted);font-weight:400;text-transform:none"></span>
+                <button class="pm-add-btn" onclick="supRefresh()" style="background:var(--surface);border:1px solid var(--border);color:var(--text)">🔄 Actualiser</button>
+                <button class="pm-add-btn" onclick="supExportCSV()">⬇ Export CSV</button>
+              </div>
+            </div>
+            <!-- KPIs supervision -->
+            <div id="sup-kpi-row" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px"></div>
+            <!-- Filtre -->
+            <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+              <select id="sup-filter-status" onchange="supRefresh()" style="padding:7px 10px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px">
+                <option value="all">Tous les statuts</option>
+                <option value="online">En ligne uniquement</option>
+                <option value="offline">Déconnectés</option>
+              </select>
+              <select id="sup-filter-project" onchange="supRefresh()" style="padding:7px 10px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px">
+                <option value="all">Tous les projets</option>
+                <option value="ilek">ILEK</option>
+                <option value="fidelis">FIDELIS</option>
+                <option value="tmci">TMCI / TotalEnergies</option>
+              </select>
+              <div style="font-size:11px;color:var(--muted);margin-left:auto">⚡ Auto-actualisation toutes les 20 secondes · Partage via même navigateur (onglets)</div>
+            </div>
+            <!-- Tableau sessions -->
+            <div id="sup-sessions-wrap"></div>
+          </div>
+          <!-- Historique des sessions -->
+          <div class="pm-section">
+            <div class="pm-section-title">📊 Historique des Sessions (30 dernières)
+              <button class="pm-add-btn" style="background:var(--ko);color:#fff;margin-left:auto" onclick="supClearHistory()">🗑 Vider l'historique</button>
+            </div>
+            <div id="sup-history-wrap"></div>
           </div>
         </div>
 
@@ -2425,6 +2505,58 @@ input,select,textarea{font-family:inherit}
           </div>
         </div>
       </div>
+      <!-- ═══ PAGE : VUE GLOBALE (Admin + Directeur) ═══════════════════════════════ -->
+      <div class="page" id="page-global">
+        <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+          <div>
+            <div class="page-title">🌐 Tableau de Bord Global — Tous Projets</div>
+            <div class="page-sub">Synthèse consolidée · ILEK · FIDELIS · TMCI</div>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+            <select id="global-filter-project" onchange="renderGlobalDashboard()" style="padding:7px 12px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px">
+              <option value="all">Tous les projets</option>
+              <option value="ilek">ILEK</option>
+              <option value="fidelis">FIDELIS</option>
+              <option value="tmci">TMCI</option>
+            </select>
+            <select id="global-filter-period" onchange="renderGlobalDashboard()" style="padding:7px 12px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px">
+              <option value="7j">7 derniers jours</option>
+              <option value="30j" selected>30 derniers jours</option>
+              <option value="90j">90 derniers jours</option>
+              <option value="all">Tout l'historique</option>
+            </select>
+            <button onclick="exportGlobalCSV()" style="padding:7px 14px;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">⬇ Export CSV</button>
+          </div>
+        </div>
+        <!-- KPI globaux -->
+        <div id="global-kpi-row" class="kpi-grid" style="margin-bottom:20px"></div>
+        <!-- Grille comparatif projets -->
+        <div class="section-card" style="margin-bottom:20px">
+          <div class="section-card-header">
+            <div class="section-card-title">📊 Comparatif Performance par Projet</div>
+          </div>
+          <div class="section-card-body" style="padding:0">
+            <div id="global-project-table"></div>
+          </div>
+        </div>
+        <!-- Top agents toutes équipes -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+          <div class="section-card">
+            <div class="section-card-header"><div class="section-card-title">🏆 Top 5 Agents (tous projets)</div></div>
+            <div class="section-card-body" style="padding:0"><div id="global-top-agents"></div></div>
+          </div>
+          <div class="section-card">
+            <div class="section-card-header"><div class="section-card-title">⚠️ Agents en Difficulté (tous projets)</div></div>
+            <div class="section-card-body" style="padding:0"><div id="global-low-agents"></div></div>
+          </div>
+        </div>
+        <!-- Historique tendance -->
+        <div class="section-card">
+          <div class="section-card-header"><div class="section-card-title">📈 Volume d'Évaluations par Projet</div></div>
+          <div class="section-card-body"><div id="global-volume-chart" style="min-height:80px"></div></div>
+        </div>
+      </div>
+
       <!-- ═══ PAGE : AMÉLIORATION CONTINUE ═══════════════════════════════ -->
       <div class="page" id="page-amelioration">
         <div class="ac-hero">
@@ -2579,7 +2711,15 @@ input,select,textarea{font-family:inherit}
       </div>
       <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
         <div class="form-group"><label>Identifiant (login) *</label><input type="text" id="um-login" placeholder="FATIM@KYPER" style="text-transform:uppercase"></div>
-        <div class="form-group"><label>Mot de passe *</label><input type="text" id="um-pass" placeholder="••••••" autocomplete="new-password"></div>
+        <div class="form-group"><label>Mot de passe *</label>
+          <div class="um-pass-row" style="position:relative">
+            <input type="password" id="um-pass" placeholder="••••••" autocomplete="new-password" style="padding-right:70px">
+            <div style="position:absolute;right:6px;top:50%;transform:translateY(-50%);display:flex;gap:4px">
+              <button type="button" class="um-pw-toggle" onclick="(function(){var i=document.getElementById('um-pass');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🙈';}).call(this)" title="Afficher/masquer">👁</button>
+              <button type="button" class="um-pw-toggle" onclick="(function(){var c='ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789@#!';var p='';for(var i=0;i<9;i++)p+=c[Math.floor(Math.random()*c.length)];document.getElementById('um-pass').value=p;document.getElementById('um-pass').type='text';showToast('Mot de passe généré : '+p,'ok');})()" title="Générer un mot de passe">🎲</button>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
         <div class="form-group"><label>Rôle *</label>
@@ -3279,8 +3419,15 @@ const USERS=[
   {id:"sup2",  login:"MARIE@KYPER", pass:"marie", name:"Marie Koffi",     role:"Superviseur"},
   {id:"sup3",  login:"FATIM@KYPER", pass:"fatim", name:"Fatim Fadiga",    role:"Superviseur ILEK"},
   {id:"cp1",   login:"PAUL@KYPER",  pass:"paul",  name:"Paul Brou",       role:"Chef de Projet"},
-  {id:"admin", login:"ADMIN@KYPER", pass:"admin", name:"Admin KYPER",     role:"Administrateur"},
+  {id:"admin", login:"ADMIN@KYPER", pass:"kyper2025", name:"Admin KYPER", role:"Administrateur"},
 ];
+
+/* v11 — safeSet: null-safe DOM setter */
+function safeSet(id, prop, val){
+  const el = document.getElementById(id);
+  if(el) el[prop] = val;
+}
+
 
 /* ═══════════════════════════════════════════════════════
    STATE & STORAGE
@@ -3352,11 +3499,27 @@ function defaultAgents(p){
    AUTH
 ═══════════════════════════════════════════════════════ */
 function doLogin(){
-  const u=document.getElementById("login-user").value.trim().toUpperCase();
-  const p=document.getElementById("login-pass").value.trim().toLowerCase();
-  const proj=document.getElementById("login-project").value;
-  const user=USERS.find(x=>x.login===u&&x.pass===p);
-  if(!user){document.getElementById("login-error").style.display="block";return;}
+  const u    = document.getElementById("login-user").value.trim().toUpperCase();
+  const pRaw = document.getElementById("login-pass").value.trim();
+  const proj = document.getElementById("login-project").value;
+  const errEl = document.getElementById("login-error");
+  if(!u||!pRaw){ errEl.textContent="Identifiant et mot de passe requis."; errEl.style.display="block"; return; }
+  const allUsers = (typeof getUsers==="function") ? getUsers() : USERS;
+  const user = allUsers.find(x =>
+    x.login.toUpperCase()===u &&
+    (x.pass===pRaw || x.pass.toLowerCase()===pRaw.toLowerCase())
+  );
+  if(!user){
+    errEl.textContent="Identifiant ou mot de passe incorrect.";
+    errEl.style.display="block";
+    try{ logLogin(null,false,'Login echoue login='+u); }catch(e){}
+    return;
+  }
+  if(user.statut==='Suspendu'){
+    errEl.textContent="Compte suspendu. Contactez l’administrateur.";
+    errEl.style.display="block"; return;
+  }
+  errEl.style.display="none";
   currentUser=user; currentProject=proj;
   document.getElementById("login-screen").classList.add("hidden");
   document.getElementById("app").classList.add("visible");
@@ -3386,6 +3549,7 @@ function initApp(){
   document.getElementById("project-select").value=currentProject;
   renderAll();
   updateNavBadges();
+  try{ applyRolePermissions(); }catch(e){ console.warn('perm',e); }
   /* v6 — Démarrage messagerie flottante */
   initMsgSystem();
   /* v7 — Migration grille ILEK V2 (purge évals V1 incompatibles) */
@@ -3456,9 +3620,10 @@ function goPage(name){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.getElementById(`page-${name}`).classList.add("active");
   document.querySelectorAll(".nav-item").forEach(el=>el.classList.toggle("active",el.dataset.page===name));
-  const titles={dashboard:"Dashboard",evaluation:"Nouvelle Évaluation",history:"Historique",agents:"Agents",reports:"Rapports",analyse:"Analyse Qualité","ventes-don":"Ventes / Don",debrief:"Debrief",collaborateur:"Gestion Collaborateurs",cloture:"Point de Clôture",coqual:"COQUAL — Comité Qualité",feedback:"Feedback Qualité → Production",parametres:"Paramètres & Gestion",amelioration:"Amélioration Continue"};
+  const titles={dashboard:"Dashboard",evaluation:"Nouvelle Évaluation",history:"Historique",agents:"Agents",reports:"Rapports",analyse:"Analyse Qualité","ventes-don":"Ventes / Don",debrief:"Debrief",collaborateur:"Gestion Collaborateurs",cloture:"Point de Clôture",coqual:"COQUAL — Comité Qualité",feedback:"Feedback Qualité → Production",parametres:"Paramètres & Gestion",amelioration:"Amélioration Continue",global:"Vue Globale — Tous Projets"};
   document.getElementById("topbar-title").textContent=titles[name]||name;
-  document.getElementById("topbar-sub").textContent=PROJECTS[currentProject].name+" — "+PROJECTS[currentProject].label;
+  document.getElementById("topbar-sub").textContent=name==="global"?"Synthèse multi-projets · Admin & Direction":PROJECTS[currentProject].name+" — "+PROJECTS[currentProject].label;
+  if(name==="global"){ renderGlobalDashboard(); return; }
   if(name==="dashboard"){populateFilterSelects('dashboard');renderDashboard();}
   if(name==="evaluation")renderEvalPage();
   if(name==="history")renderHistory();
@@ -4587,22 +4752,22 @@ function renderAnalyseVentes(evals, p, camp){
   const proj = getActiveContractsProject();
   const cfg = PROJECTS[proj] && PROJECTS[proj].contractsConfig;
   if(!cfg){
-    document.getElementById('import-hint').innerHTML = '<em>Aucune configuration d\'import pour ce projet.</em>';
+    (document.getElementById('import-hint')||Object.create({set innerHTML(_){}})).innerHTML = '<em>Aucune configuration d\'import pour ce projet.</em>';
     return;
   }
   /* Titre et hint */
-  document.getElementById('import-title').innerHTML = `📥 Import ${cfg.icon} ${cfg.label}`;
+  (document.getElementById('import-title')||Object.create({set innerHTML(_){}})).innerHTML = `📥 Import ${cfg.icon} ${cfg.label}`;
   const cols = cfg.columns.map(c => c.label).join(' · ');
-  document.getElementById('import-hint').innerHTML = `
+  (document.getElementById('import-hint')||Object.create({set innerHTML(_){}})).innerHTML = `
     <strong>📋 Mode opératoire :</strong><br>
     1. Ouvrez votre fichier Excel ${cfg.label} → Sélectionnez toutes les lignes (<code>Ctrl+A</code>) → Copiez (<code>Ctrl+C</code>)<br>
     2. Cliquez dans la zone ci-dessous → Collez (<code>Ctrl+V</code>) → Cliquez <strong>IMPORTER</strong><br>
     <br>
     💡 <strong>Colonnes attendues :</strong> <span style="color:var(--project-color,var(--accent))">${cols}</span>`;
-  document.getElementById('contracts-unit-plural').textContent = cfg.unitPlural;
+  (document.getElementById('contracts-unit-plural')||Object.create({set textContent(_){}})).textContent = cfg.unitPlural;
 
   const fullList = getContracts(proj);
-  document.getElementById('import-count').innerHTML = `${fullList.length} ${fullList.length>1?cfg.unitPlural:cfg.unit} en mémoire`;
+  (document.getElementById('import-count')||Object.create({set innerHTML(_){}})).innerHTML = `${fullList.length} ${fullList.length>1?cfg.unitPlural:cfg.unit} en mémoire`;
 
   /* ─── Peuplement des filtres (depuis la liste complète) ── */
   const agentSel = document.getElementById('contracts-filter-agent');
@@ -4683,7 +4848,7 @@ function renderVentesKpis(list, cfg, evals){
   } else {
     kpis.push({label:'Tx transfo vs écoute', val:transfortotal?tauxTransfo.toFixed(0)+'%':'—', color:tauxTransfo>=50?'var(--ok)':tauxTransfo>=30?'var(--warn)':'var(--ko)'});
   }
-  document.getElementById('ventes-kpi-row').innerHTML = kpis.map(k =>
+  (document.getElementById('ventes-kpi-row')||Object.create({set innerHTML(_){}})).innerHTML = kpis.map(k =>
     `<div class="stat-mini"><div class="stat-mini-val" style="color:${k.color||'var(--text)'}">${k.val}</div><div class="stat-mini-lbl">${k.label}</div></div>`
   ).join('');
 }
@@ -4706,7 +4871,7 @@ function renderContractsGlobal(list, cfg, proj){
 
   /* Titre + source adaptés au projet */
   const sourceLbl = isDon ? 'SOURCE : FEUILLE DONS' : 'SOURCE : FEUILLE CONTRAT';
-  document.getElementById('contracts-global-source').textContent =
+  (document.getElementById('contracts-global-source')||Object.create({set textContent(_){}})).textContent =
     `${sourceLbl} · ${n} ${n>1?unitLbl:cfg.unit} filtré${n>1?'s':''}`;
 
   /* ─── Comptages par état ──────────────────────────────── */
@@ -4753,7 +4918,7 @@ function renderContractsGlobal(list, cfg, proj){
       obj:'≤ '+cfg.globalKpis.tauxResiliation.objective.toFixed(1)+'%', st:sResil},
   ];
 
-  document.getElementById('cg-top-kpis').innerHTML = topKpis.map(k => `
+  (document.getElementById('cg-top-kpis')||Object.create({set innerHTML(_){}})).innerHTML = topKpis.map(k => `
     <div class="cg-card ${k.st.cls||''}">
       <div class="cg-card-label">${k.icon} ${k.label}</div>
       <div class="cg-card-val ${k.st.cls||''}">${k.val}</div>
@@ -4771,7 +4936,7 @@ function renderContractsGlobal(list, cfg, proj){
     const sumAll = montants.reduce((a,b)=>a+b,0);
     const sumConf = montantsConfirmes.reduce((a,b)=>a+b,0);
     const avgAll = montants.length ? sumAll/montants.length : null;
-    document.getElementById('cg-conso-row').innerHTML = `
+    (document.getElementById('cg-conso-row')||Object.create({set innerHTML(_){}})).innerHTML = `
       <div class="cg-card">
         <div class="cg-card-label">💜 Montant Total Promis</div>
         <div class="cg-card-val ${sumAll?'ok':'neutral'}">${sumAll.toLocaleString('fr-FR',{maximumFractionDigits:0})} €</div>
@@ -4794,7 +4959,7 @@ function renderContractsGlobal(list, cfg, proj){
     const consoGaz  = list.map(c => parseFloat(c.consoGaz )).filter(v => !isNaN(v) && v > 0);
     const avgElec = consoElec.length ? consoElec.reduce((a,b)=>a+b,0)/consoElec.length : null;
     const avgGaz  = consoGaz.length  ? consoGaz.reduce( (a,b)=>a+b,0)/consoGaz.length  : null;
-    document.getElementById('cg-conso-row').innerHTML = `
+    (document.getElementById('cg-conso-row')||Object.create({set innerHTML(_){}})).innerHTML = `
       <div class="cg-card">
         <div class="cg-card-label">⚡ Car ELECT (kWh)</div>
         <div class="cg-card-val ${avgElec===null?'neutral':'ok'}">${avgElec===null?'—':avgElec.toLocaleString('fr-FR',{maximumFractionDigits:0})}</div>
@@ -4829,7 +4994,7 @@ function renderContractsGlobal(list, cfg, proj){
       {lbl:'RÉSILIÉS',   count:resilies,   color:'var(--warn)'},
     ];
   }
-  document.getElementById('cg-etat-repart').innerHTML = etatsRep.map(e => `
+  (document.getElementById('cg-etat-repart')||Object.create({set innerHTML(_){}})).innerHTML = etatsRep.map(e => `
     <div class="cg-etat-cell">
       <div class="cg-etat-count" style="color:${e.color}">${e.count}</div>
       <div class="cg-etat-label">${e.lbl}</div>
@@ -4904,8 +5069,8 @@ function renderContractsGlobal(list, cfg, proj){
       </div>`;
     }).join('');
   }
-  document.getElementById('cg-motifs-annul').innerHTML = renderMotifs(motifsAnnul, 'var(--ko)');
-  document.getElementById('cg-motifs-resil').innerHTML = renderMotifs(motifsResil, 'var(--warn)');
+  (document.getElementById('cg-motifs-annul')||Object.create({set innerHTML(_){}})).innerHTML = renderMotifs(motifsAnnul, 'var(--ko)');
+  (document.getElementById('cg-motifs-resil')||Object.create({set innerHTML(_){}})).innerHTML = renderMotifs(motifsResil, 'var(--warn)');
 
   /* ─── Responsabilités (Client vs Conseiller) ──────── */
   function countResp(etatFilter){
@@ -5223,12 +5388,12 @@ function renderVentesDonProject(){
   const proj = _vdActiveProj;
   const cfg = PROJECTS[proj] && PROJECTS[proj].contractsConfig;
   if(!cfg){
-    document.getElementById('vd-import-title').innerHTML = '⚠️ Configuration indisponible';
+    (document.getElementById('vd-import-title')||Object.create({set innerHTML(_){}})).innerHTML = '⚠️ Configuration indisponible';
     return;
   }
 
   /* Titre import + hint colonnes */
-  document.getElementById('vd-import-title').innerHTML = `📥 Import ${cfg.icon} ${cfg.label}`;
+  (document.getElementById('vd-import-title')||Object.create({set innerHTML(_){}})).innerHTML = `📥 Import ${cfg.icon} ${cfg.label}`;
   const cols = cfg.columns.map(c => c.label).join(' · ');
   document.getElementById('vd-paste-hint').innerHTML = `
     <strong>📋 Mode copier-coller :</strong>
@@ -5237,7 +5402,7 @@ function renderVentesDonProject(){
   document.getElementById('vd-unit-plural').textContent = cfg.unitPlural;
 
   const fullList = getContracts(proj);
-  document.getElementById('vd-import-count').innerHTML = `${fullList.length} ${fullList.length>1?cfg.unitPlural:cfg.unit} en mémoire`;
+  (document.getElementById('vd-import-count')||Object.create({set innerHTML(_){}})).innerHTML = `${fullList.length} ${fullList.length>1?cfg.unitPlural:cfg.unit} en mémoire`;
 
   /* Peuplement des filtres */
   const agentSel = document.getElementById('fvd-agent');
@@ -5915,7 +6080,7 @@ const getCoachings = () => store.get('kyper_coachings',[]);
 const saveCoachings = d => store.set('kyper_coachings',d);
 
 function updateCoachingAgents(){
-  const camp = document.getElementById('cm-camp').value;
+  const camp = (document.getElementById('cm-camp')||Object.create({set value(_){}})).value;
   const agents = getAgents(camp);
   const sel = document.getElementById('cm-agent');
   const cur = sel.value;
@@ -5923,60 +6088,60 @@ function updateCoachingAgents(){
 }
 
 function openCoachingModal(id=null) {
-  document.getElementById('coaching-edit-id').value = id||'';
+  (document.getElementById('coaching-edit-id')||Object.create({set value(_){}})).value = id||'';
   const now = new Date().toISOString().slice(0,10);
   if(id){
     const c = getCoachings().find(x=>x.id==id);
     if(!c)return;
-    document.getElementById('coaching-modal-title').textContent = '🎯 Modifier le Coaching';
-    document.getElementById('cm-camp').value = c.project||'ilek';
+    (document.getElementById('coaching-modal-title')||Object.create({set textContent(_){}})).textContent = '🎯 Modifier le Coaching';
+    (document.getElementById('cm-camp')||Object.create({set value(_){}})).value = c.project||'ilek';
     updateCoachingAgents();
-    document.getElementById('cm-agent').value = c.agentId||'';
-    document.getElementById('cm-sup').value = c.superviseur||'';
-    document.getElementById('cm-date').value = c.date||now;
-    document.getElementById('cm-theme').value = c.theme||'';
-    document.getElementById('cm-evalref').value = c.evalRef||'';
-    document.getElementById('cm-points').value = c.pointsAmelio||'';
-    document.getElementById('cm-objectifs').value = c.objectifs||'';
-    document.getElementById('cm-actions').value = c.actions||'';
-    document.getElementById('cm-engage').value = c.engagement||'';
-    document.getElementById('cm-statut').value = c.statut||'Planifié';
-    document.getElementById('cm-datereali').value = c.dateReali||'';
+    (document.getElementById('cm-agent')||Object.create({set value(_){}})).value = c.agentId||'';
+    (document.getElementById('cm-sup')||Object.create({set value(_){}})).value = c.superviseur||'';
+    (document.getElementById('cm-date')||Object.create({set value(_){}})).value = c.date||now;
+    (document.getElementById('cm-theme')||Object.create({set value(_){}})).value = c.theme||'';
+    (document.getElementById('cm-evalref')||Object.create({set value(_){}})).value = c.evalRef||'';
+    (document.getElementById('cm-points')||Object.create({set value(_){}})).value = c.pointsAmelio||'';
+    (document.getElementById('cm-objectifs')||Object.create({set value(_){}})).value = c.objectifs||'';
+    (document.getElementById('cm-actions')||Object.create({set value(_){}})).value = c.actions||'';
+    (document.getElementById('cm-engage')||Object.create({set value(_){}})).value = c.engagement||'';
+    (document.getElementById('cm-statut')||Object.create({set value(_){}})).value = c.statut||'Planifié';
+    (document.getElementById('cm-datereali')||Object.create({set value(_){}})).value = c.dateReali||'';
   } else {
-    document.getElementById('coaching-modal-title').textContent = '🎯 Nouveau Plan de Coaching';
-    document.getElementById('cm-camp').value = currentProject;
+    (document.getElementById('coaching-modal-title')||Object.create({set textContent(_){}})).textContent = '🎯 Nouveau Plan de Coaching';
+    (document.getElementById('cm-camp')||Object.create({set value(_){}})).value = currentProject;
     updateCoachingAgents();
-    document.getElementById('cm-agent').value='';
-    document.getElementById('cm-sup').value = currentUser?.name||'';
-    document.getElementById('cm-date').value = now;
-    document.getElementById('cm-theme').value='';document.getElementById('cm-evalref').value='';
-    document.getElementById('cm-points').value='';document.getElementById('cm-objectifs').value='';
-    document.getElementById('cm-actions').value='';document.getElementById('cm-engage').value='';
-    document.getElementById('cm-statut').value='Planifié';document.getElementById('cm-datereali').value='';
+    (document.getElementById('cm-agent')||Object.create({set value(_){}})).value='';
+    (document.getElementById('cm-sup')||Object.create({set value(_){}})).value = currentUser?.name||'';
+    (document.getElementById('cm-date')||Object.create({set value(_){}})).value = now;
+    (document.getElementById('cm-theme')||Object.create({set value(_){}})).value='';(document.getElementById('cm-evalref')||Object.create({set value(_){}})).value='';
+    (document.getElementById('cm-points')||Object.create({set value(_){}})).value='';(document.getElementById('cm-objectifs')||Object.create({set value(_){}})).value='';
+    (document.getElementById('cm-actions')||Object.create({set value(_){}})).value='';(document.getElementById('cm-engage')||Object.create({set value(_){}})).value='';
+    (document.getElementById('cm-statut')||Object.create({set value(_){}})).value='Planifié';(document.getElementById('cm-datereali')||Object.create({set value(_){}})).value='';
   }
   openModal('modal-coaching');
 }
 
 function saveCoaching(){
-  const camp = document.getElementById('cm-camp').value;
+  const camp = (document.getElementById('cm-camp')||Object.create({set value(_){}})).value;
   const agSel = document.getElementById('cm-agent');
   const agOpt = agSel.options[agSel.selectedIndex];
-  const id = document.getElementById('coaching-edit-id').value;
+  const id = (document.getElementById('coaching-edit-id')||Object.create({set value(_){}})).value;
   const obj = {
     id: id||Date.now(),
     project: camp,
     agentId: agSel.value,
     agentName: agOpt?.dataset?.name||agOpt?.text||'',
-    superviseur: document.getElementById('cm-sup').value,
-    date: document.getElementById('cm-date').value,
-    theme: document.getElementById('cm-theme').value,
-    evalRef: document.getElementById('cm-evalref').value,
-    pointsAmelio: document.getElementById('cm-points').value,
-    objectifs: document.getElementById('cm-objectifs').value,
-    actions: document.getElementById('cm-actions').value,
-    engagement: document.getElementById('cm-engage').value,
-    statut: document.getElementById('cm-statut').value,
-    dateReali: document.getElementById('cm-datereali').value,
+    superviseur: (document.getElementById('cm-sup')||Object.create({set value(_){}})).value,
+    date: (document.getElementById('cm-date')||Object.create({set value(_){}})).value,
+    theme: (document.getElementById('cm-theme')||Object.create({set value(_){}})).value,
+    evalRef: (document.getElementById('cm-evalref')||Object.create({set value(_){}})).value,
+    pointsAmelio: (document.getElementById('cm-points')||Object.create({set value(_){}})).value,
+    objectifs: (document.getElementById('cm-objectifs')||Object.create({set value(_){}})).value,
+    actions: (document.getElementById('cm-actions')||Object.create({set value(_){}})).value,
+    engagement: (document.getElementById('cm-engage')||Object.create({set value(_){}})).value,
+    statut: (document.getElementById('cm-statut')||Object.create({set value(_){}})).value,
+    dateReali: (document.getElementById('cm-datereali')||Object.create({set value(_){}})).value,
     createdBy: currentUser?.name||'',
     updatedAt: new Date().toISOString(),
   };
@@ -6013,7 +6178,7 @@ function renderCoaching(){
   }).sort((a,b)=>b.date.localeCompare(a.date));
 
   const byStatut = s => list.filter(c=>c.statut===s).length;
-  document.getElementById('coaching-stats').innerHTML = [
+  (document.getElementById('coaching-stats')||Object.create({set innerHTML(_){}})).innerHTML = [
     {val:list.length,lbl:'Total'},
     {val:byStatut('Planifié'),lbl:'Planifiés'},
     {val:byStatut('En cours'),lbl:'En cours'},
@@ -6632,14 +6797,21 @@ function saveNewAgent(){
 }
 
 function updateNavBadges(){
-  document.getElementById('coaching-badge').textContent = getCoachings().length;
+  const _sb = (id, val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
+  _sb('coaching-badge', typeof getCoachings==='function' ? getCoachings().length : 0);
   // Debrief badge : nombre d'évaluations en attente de débrief (tous projets)
   let pending = 0;
-  Object.keys(PROJECTS).forEach(c => {
-    getEvals(c).forEach(e => { if(!getDebriefForEval(e.id)) pending++; });
-  });
-  document.getElementById('debrief-badge').textContent = pending;
-  document.getElementById('cloture-badge').textContent = getClotureList().length;
+  try{
+    Object.keys(PROJECTS).forEach(c => {
+      getEvals(c).forEach(e => { if(!getDebriefForEval(e.id)) pending++; });
+    });
+  }catch(e){}
+  _sb('debrief-badge', pending);
+  _sb('cloture-badge', typeof getClotureList==='function' ? getClotureList().length : 0);
+  _sb('feedback-badge', typeof getFeedbacks==='function' ? getFeedbacks().length : 0);
+  _sb('amelio-badge', typeof getAmeliorations==='function' ? getAmeliorations().length : 0);
+  _sb('ventesdon-badge', typeof getContracts==='function' ? getContracts(window.currentProject||'ilek').length : 0);
+  _sb('analyse-badge', '');
   updateBadge();
 }
 
@@ -9220,7 +9392,7 @@ function acRenderBoucles(){
     j30:      arr.filter(b => b.phase === 'j30').length,
     overdue:  arr.filter(b => b.phase === 'overdue').length,
   };
-  document.getElementById('ac-boucle-kpis').innerHTML = `
+  (document.getElementById('ac-boucle-kpis')||Object.create({set innerHTML(_){}})).innerHTML = `
     <div class="ac-kpi"><div class="ac-kpi-lbl">📤 En attente signature</div><div class="ac-kpi-val warn">${kpis.sent}</div></div>
     <div class="ac-kpi"><div class="ac-kpi-lbl">✍️ Signés</div><div class="ac-kpi-val ok">${kpis.signed}</div></div>
     <div class="ac-kpi"><div class="ac-kpi-lbl">📅 Check J+15</div><div class="ac-kpi-val">${kpis.j15}</div></div>
@@ -11498,25 +11670,52 @@ function autoGenerateCoachingPlans(){
 ═══════════════════════════════════════════════════════════════════ */
 
 const getUsers = () => {
-  const stored = store.get('kyper_users', null);
+  let stored = store.get('kyper_users', null);
+
+  /* ── Seed initial si base vide ── */
   if(!stored || !stored.length){
-    /* Seed initial avec USERS hardcodés (migration v7→v8) */
-    const seed = USERS.map(u => ({
-      id: u.id,
-      name: u.name,
-      login: u.login,
-      pass: u.pass,
-      role: u.role,
-      project: 'all',
-      equipe: '',
-      mat: '',
-      statut: 'Actif',
-      createdAt: new Date().toISOString(),
-      createdBy: 'Seed migration',
-    }));
-    store.set('kyper_users', seed);
-    return seed;
+    stored = [
+      {
+        id: 'admin_default',
+        name: 'Administrateur KYPER',
+        login: 'ADMIN@KYPER',
+        pass: 'kyper2025',
+        role: 'Administrateur',
+        project: 'all', equipe: '', mat: '', statut: 'Actif',
+        createdAt: new Date().toISOString(),
+        createdBy: 'Seed v11',
+      },
+      ...USERS.filter(u => u.id !== 'admin').map(u => ({
+        id: u.id, name: u.name, login: u.login, pass: u.pass,
+        role: u.role, project: 'all', equipe: '', mat: '', statut: 'Actif',
+        createdAt: new Date().toISOString(), createdBy: 'Seed migration',
+      })),
+    ];
+    store.set('kyper_users', stored);
+    return stored;
   }
+
+  /* ── Migration : garantit qu'un compte ADMIN@KYPER existe toujours ── */
+  const adminIdx = stored.findIndex(u => u.login.toUpperCase() === 'ADMIN@KYPER');
+  if(adminIdx < 0){
+    /* Aucun compte admin → on le crée */
+    stored.unshift({
+      id: 'admin_default',
+      name: 'Administrateur KYPER',
+      login: 'ADMIN@KYPER',
+      pass: 'kyper2025',
+      role: 'Administrateur',
+      project: 'all', equipe: '', mat: '', statut: 'Actif',
+      createdAt: new Date().toISOString(),
+      createdBy: 'Auto-restauration v11',
+    });
+    store.set('kyper_users', stored);
+  } else if(stored[adminIdx].pass === 'admin'){
+    /* Ancien mot de passe par défaut détecté → mise à jour silencieuse */
+    stored[adminIdx].pass = 'kyper2025';
+    store.set('kyper_users', stored);
+  }
+
   return stored;
 };
 const saveUsers = (d) => store.set('kyper_users', d);
@@ -11541,12 +11740,12 @@ function logLogin(user, success, reason){
 
 /* ───── Permissions par rôle ───── */
 const ROLE_PERMISSIONS = {
-  'Administrateur':     {pages:'*', canManageUsers:true, canDelete:true, canExport:true, canReset:true},
-  'Directeur Général':  {pages:'*', canManageUsers:false, canDelete:true, canExport:true, canReset:false},
-  'Chef de Projet':     {pages:['dashboard','evaluation','history','agents','analyse','coaching','debrief','collaborateur','cloture','coqual','feedback','amelioration','reports','parametres'], canManageUsers:false, canDelete:true, canExport:true, canReset:false},
-  'Superviseur':        {pages:['dashboard','evaluation','history','agents','coaching','debrief','collaborateur','cloture','feedback'], canManageUsers:false, canDelete:false, canExport:true, canReset:false},
-  'Superviseur ILEK':   {pages:['dashboard','evaluation','history','agents','coaching','debrief','collaborateur','cloture','feedback'], canManageUsers:false, canDelete:false, canExport:true, canReset:false},
-  'Téléconseiller':     {pages:['dashboard','history','debrief'], canManageUsers:false, canDelete:false, canExport:false, canReset:false, readOnly:true},
+  'Administrateur':     {pages:'*', canManageUsers:true, canSeeHistory:true, canSupervise:true, canDelete:true, canExport:true, canReset:true},
+  'Directeur Général':  {pages:'*', canManageUsers:false, canSeeHistory:true, canSupervise:true, canDelete:true, canExport:true, canReset:false},
+  'Chef de Projet':     {pages:['dashboard','evaluation','history','agents','analyse','coaching','debrief','collaborateur','cloture','coqual','feedback','amelioration','reports','parametres'], canManageUsers:false, canSeeHistory:false, canSupervise:false, canDelete:true, canExport:true, canReset:false},
+  'Superviseur':        {pages:['dashboard','evaluation','history','agents','coaching','debrief','collaborateur','cloture','feedback'], canManageUsers:false, canSeeHistory:false, canSupervise:false, canDelete:false, canExport:true, canReset:false},
+  'Superviseur ILEK':   {pages:['dashboard','evaluation','history','agents','coaching','debrief','collaborateur','cloture','feedback'], canManageUsers:false, canSeeHistory:false, canSupervise:false, canDelete:false, canExport:true, canReset:false},
+  'Téléconseiller':     {pages:['dashboard','history','debrief'], canManageUsers:false, canSeeHistory:false, canSupervise:false, canDelete:false, canExport:false, canReset:false, readOnly:true},
 };
 function userCan(action){
   if(!currentUser) return false;
@@ -11568,28 +11767,41 @@ function userCanAccessPage(pageName){
 function applyRolePermissions(){
   if(!currentUser) return;
   const perm = ROLE_PERMISSIONS[currentUser.role] || ROLE_PERMISSIONS['Superviseur'];
+  const isAdminOrDir = perm.canSeeHistory; /* true = Admin ou Directeur Général */
 
-  /* Cache/montre les pages selon permissions */
+  /* Pages accessibles */
   document.querySelectorAll('.nav-item[data-page]').forEach(item => {
     const pageName = item.dataset.page;
-    if(userCanAccessPage(pageName)){
-      item.style.display = '';
-    } else {
-      item.style.display = 'none';
+    if(pageName === 'global'){
+      item.style.display = isAdminOrDir ? '' : 'none';
+      return;
     }
+    item.style.display = userCanAccessPage(pageName) ? '' : 'none';
   });
 
-  /* Montre l'onglet Utilisateurs seulement pour Admin */
+  /* Onglets admin sidebar */
+  document.querySelectorAll('.nav-admin-dir').forEach(el => {
+    el.style.display = isAdminOrDir ? '' : 'none';
+  });
+
+  /* Onglet Création d'accès (Admin seulement) */
   document.querySelectorAll('.pm-admin-only').forEach(el => {
     el.style.display = perm.canManageUsers ? '' : 'none';
   });
 
-  /* Read-only mode : disable tous les boutons .btn-new hors gestion compte */
-  if(perm.readOnly){
-    document.body.classList.add('role-readonly');
-  } else {
-    document.body.classList.remove('role-readonly');
-  }
+  /* Onglet Historique connexions (Admin + Directeur) */
+  document.querySelectorAll('.pm-history-visible').forEach(el => {
+    el.style.display = perm.canSeeHistory ? '' : 'none';
+  });
+
+  /* Onglet Supervision (Admin + Directeur) */
+  document.querySelectorAll('.pm-supervision-visible').forEach(el => {
+    el.style.display = perm.canSupervise ? '' : 'none';
+  });
+
+  /* Read-only mode */
+  if(perm.readOnly) document.body.classList.add('role-readonly');
+  else document.body.classList.remove('role-readonly');
 }
 
 /* Hook : appliquer permissions après initApp */
@@ -11604,34 +11816,7 @@ function applyRolePermissions(){
   };
 })();
 
-/* Hook : remplacer doLogin pour utiliser getUsers() */
-(function hookDoLogin(){
-  if(typeof window.doLogin !== 'function') return;
-  window.doLogin = function(){
-    const u = document.getElementById("login-user").value.trim().toUpperCase();
-    const p = document.getElementById("login-pass").value.trim();
-    const proj = document.getElementById("login-project").value;
-    const users = getUsers();
-    const user = users.find(x => x.login.toUpperCase() === u && x.pass === p);
-    if(!user){
-      document.getElementById("login-error").style.display = "block";
-      logLogin(null, false, `Tentative avec login="${u}"`);
-      return;
-    }
-    if(user.statut === 'Suspendu'){
-      document.getElementById("login-error").textContent = "Compte suspendu. Contactez l'administrateur.";
-      document.getElementById("login-error").style.display = "block";
-      logLogin(user, false, 'Compte suspendu');
-      return;
-    }
-    currentUser = user;
-    currentProject = proj;
-    document.getElementById("login-screen").classList.add("hidden");
-    document.getElementById("app").classList.add("visible");
-    initApp();
-    /* initApp log déjà le login OK */
-  };
-})();
+/* hookDoLogin supprimé v11.1 — doLogin gère directement getUsers() */
 
 /* ───── Render tableau utilisateurs (panel admin) ───── */
 function pmRenderUsers(){
@@ -11793,10 +11978,8 @@ function pmExportLoginLog(){
   const original = window.switchPmPanel;
   window.switchPmPanel = function(name){
     original.apply(this, arguments);
-    if(name === 'utilisateurs'){
-      pmRenderUsers();
-      pmRenderLoginLog();
-    }
+    if(name === 'utilisateurs') pmRenderUsers();
+    if(name === 'historique-cx') pmRenderLoginLog();
   };
 })();
 
@@ -11875,5 +12058,598 @@ console.log('✅ KYPER v8 — Modules chargés : Flash auto-comments, Image capt
   </div>
 </div>
 
+
+<!-- ════════════════════════════════════════════════════════════
+     KYPER v11 — TABLEAU DE BORD GLOBAL (Admin + Directeur)
+     ════════════════════════════════════════════════════════════ -->
+<script>
+/* ── Config projets pour vue globale ── */
+const GLOBAL_PROJECTS = [
+  { key:'ilek',   label:'ILEK',   color:'#00E5FF', icon:'⚡', threshold:75 },
+  { key:'fidelis',label:'FIDELIS',color:'#A78BFA', icon:'🎗️', threshold:80 },
+  { key:'tmci',   label:'TMCI',   color:'#F59E0B', icon:'🔧', threshold:78 },
+];
+
+function globalGetPeriodFilter(){
+  const sel = document.getElementById('global-filter-period');
+  const val = sel ? sel.value : '30j';
+  if(val === 'all') return null;
+  const days = val === '7j' ? 7 : val === '30j' ? 30 : 90;
+  const from = new Date(); from.setDate(from.getDate() - days); from.setHours(0,0,0,0);
+  return from;
+}
+
+function globalGetEvalsForProject(pKey, fromDate){
+  const evals = getEvals(pKey);
+  if(!fromDate) return evals;
+  return evals.filter(e => {
+    if(!e.date) return true;
+    return new Date(e.date) >= fromDate;
+  });
+}
+
+function renderGlobalDashboard(){
+  const projFilter = (document.getElementById('global-filter-project')||{}).value || 'all';
+  const fromDate   = globalGetPeriodFilter();
+
+  const projs = projFilter === 'all' ? GLOBAL_PROJECTS : GLOBAL_PROJECTS.filter(p => p.key === projFilter);
+
+  /* Calcul stats par projet */
+  const projStats = projs.map(p => {
+    const evals  = globalGetEvalsForProject(p.key, fromDate);
+    const agents = getAgents(p.key);
+    const scores = evals.map(e => e.score || 0).filter(s => s > 0);
+    const avg    = scores.length ? scores.reduce((a,b)=>a+b,0)/scores.length : null;
+    const ok     = evals.filter(e => (e.score||0) >= p.threshold).length;
+    const ko     = evals.filter(e => (e.score||0) > 0 && (e.score||0) < p.threshold).length;
+    const rate   = evals.length ? (ok / evals.length * 100) : null;
+    return { ...p, evals, agents, avg, ok, ko, rate, total: evals.length, agentCount: agents.length };
+  });
+
+  /* ── KPIs globaux ── */
+  const totalEvals  = projStats.reduce((s,p)=>s+p.total,0);
+  const totalAgents = projStats.reduce((s,p)=>s+p.agentCount,0);
+  const allScores   = projStats.flatMap(p => p.evals.map(e=>e.score||0)).filter(s=>s>0);
+  const globalAvg   = allScores.length ? allScores.reduce((a,b)=>a+b,0)/allScores.length : 0;
+  const globalConf  = projStats.reduce((s,p)=>s+p.ok,0);
+  const confRate    = totalEvals ? (globalConf/totalEvals*100) : 0;
+
+  const kpiWrap = document.getElementById('global-kpi-row');
+  if(kpiWrap) kpiWrap.innerHTML = [
+    { label:'Évaluations totales', val: totalEvals, icon:'🎧', sub: projStats.map(p=>`${p.icon} ${p.total}`).join(' · '), color:'var(--accent)' },
+    { label:'Score moyen global',  val: globalAvg.toFixed(1)+'%', icon:'📊', sub: globalAvg >= 75 ? '✅ Au-dessus du seuil' : '⚠️ Sous le seuil', color: globalAvg>=75?'var(--ok)':'var(--ko)' },
+    { label:'Taux de conformité',  val: confRate.toFixed(1)+'%', icon:'✅', sub: `${globalConf} conformes / ${totalEvals} évals`, color: confRate>=70?'var(--ok)':'var(--warn)' },
+    { label:'Agents suivis',       val: totalAgents, icon:'👥', sub: projs.map(p=>`${p.icon} ${projStats.find(s=>s.key===p.key).agentCount}`).join(' · '), color:'var(--brand-gold)' },
+  ].map(k=>`
+    <div class="kpi-card" style="--kpi-c:${k.color}">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:${k.color}"></div>
+      <div class="kpi-label">${k.icon} ${k.label}</div>
+      <div class="kpi-value" style="color:${k.color}">${k.val}</div>
+      <div class="kpi-sub">${k.sub}</div>
+    </div>`).join('');
+
+  /* ── Table comparatif projets ── */
+  const tableWrap = document.getElementById('global-project-table');
+  if(tableWrap) tableWrap.innerHTML = projStats.length ? `
+    <table class="data-table" style="width:100%">
+      <thead><tr>
+        <th>Projet</th><th>Évaluations</th><th>Score Moyen</th>
+        <th>Conformes</th><th>Non Conformes</th><th>Taux Qualité</th>
+        <th>Agents suivis</th><th>Tendance</th>
+      </tr></thead>
+      <tbody>${projStats.map(p => {
+        const scoreClass = p.avg === null ? 'na' : p.avg >= p.threshold ? 'ok' : p.avg >= p.threshold-10 ? 'warn' : 'ko';
+        const rateClass  = p.rate === null ? 'na' : p.rate >= 70 ? 'ok' : p.rate >= 50 ? 'warn' : 'ko';
+        const trend      = _globalTrend(p.evals);
+        return `<tr>
+          <td><span style="display:inline-flex;align-items:center;gap:7px">
+            <span style="width:8px;height:8px;border-radius:50%;background:${p.color};display:inline-block"></span>
+            <strong>${p.label}</strong>
+          </span></td>
+          <td style="font-family:'DM Mono',monospace">${p.total}</td>
+          <td><span class="score-pill ${scoreClass}">${p.avg !== null ? p.avg.toFixed(1)+'%' : '—'}</span></td>
+          <td style="color:var(--ok);font-weight:600">${p.ok}</td>
+          <td style="color:var(--ko);font-weight:600">${p.ko}</td>
+          <td><span class="score-pill ${rateClass}">${p.rate !== null ? p.rate.toFixed(1)+'%' : '—'}</span></td>
+          <td>${p.agentCount}</td>
+          <td style="font-size:16px">${trend}</td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>` : `<div class="empty-state"><div class="icon">📊</div><p>Aucune donnée sur la période</p></div>`;
+
+  /* ── Top & bas agents ── */
+  const allAgentStats = [];
+  projStats.forEach(p => {
+    p.agents.forEach(ag => {
+      const agEvals = p.evals.filter(e => e.agentId === ag.id || e.agentName === ag.name);
+      if(!agEvals.length) return;
+      const sc = agEvals.map(e=>e.score||0).filter(s=>s>0);
+      if(!sc.length) return;
+      const avg = sc.reduce((a,b)=>a+b,0)/sc.length;
+      allAgentStats.push({ name: ag.name, project: p.label, icon: p.icon, color: p.color, avg, count: agEvals.length, threshold: p.threshold });
+    });
+  });
+
+  const top5  = [...allAgentStats].sort((a,b)=>b.avg-a.avg).slice(0,5);
+  const low5  = [...allAgentStats].filter(a=>a.avg < a.threshold).sort((a,b)=>a.avg-b.avg).slice(0,5);
+
+  const _agRow = (a, rank) => `
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border)">
+      <div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,${a.color},#A78BFA);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:10px;color:#0B0D16;flex-shrink:0">${rank||a.name.charAt(0)}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:600;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.name}</div>
+        <div style="font-size:11px;color:var(--muted)">${a.icon} ${a.project} · ${a.count} éval${a.count>1?'s':''}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div class="score-pill ${a.avg>=a.threshold?'ok':a.avg>=a.threshold-10?'warn':'ko'}" style="font-size:12px">${a.avg.toFixed(1)}%</div>
+      </div>
+    </div>`;
+
+  const topWrap = document.getElementById('global-top-agents');
+  if(topWrap) topWrap.innerHTML = top5.length
+    ? top5.map((a,i)=>_agRow(a, i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}`)).join('')
+    : `<div class="empty-state" style="padding:24px"><div class="icon">🏆</div><p>Aucune donnée</p></div>`;
+
+  const lowWrap = document.getElementById('global-low-agents');
+  if(lowWrap) lowWrap.innerHTML = low5.length
+    ? low5.map((a,i)=>_agRow(a, '⚠️')).join('')
+    : `<div style="padding:20px 16px;font-size:13px;color:var(--ok)">✅ Aucun agent sous le seuil</div>`;
+
+  /* ── Barre volume ── */
+  const volWrap = document.getElementById('global-volume-chart');
+  if(volWrap){
+    const maxVol = Math.max(...projStats.map(p=>p.total), 1);
+    volWrap.innerHTML = projStats.map(p => `
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+        <div style="width:80px;font-size:12px;font-weight:600;color:${p.color};text-align:right;flex-shrink:0">${p.icon} ${p.label}</div>
+        <div style="flex:1;background:var(--surface);border-radius:6px;height:22px;overflow:hidden;position:relative">
+          <div style="height:100%;width:${maxVol>0?(p.total/maxVol*100):0}%;background:${p.color};border-radius:6px;transition:width .6s ease;opacity:.85"></div>
+        </div>
+        <div style="width:60px;font-family:'DM Mono',monospace;font-size:13px;font-weight:500;flex-shrink:0">${p.total} évals</div>
+        <div style="width:70px;flex-shrink:0"><span class="score-pill ${p.avg&&p.avg>=p.threshold?'ok':p.avg&&p.avg>=p.threshold-10?'warn':'ko'}">${p.avg?p.avg.toFixed(1)+'%':'—'}</span></div>
+      </div>`).join('');
+  }
+}
+
+function _globalTrend(evals){
+  if(evals.length < 4) return '—';
+  const sorted = [...evals].sort((a,b)=>new Date(a.date||0)-new Date(b.date||0));
+  const half = Math.floor(sorted.length/2);
+  const first = sorted.slice(0,half).map(e=>e.score||0);
+  const last  = sorted.slice(half).map(e=>e.score||0);
+  const avgF  = first.reduce((a,b)=>a+b,0)/first.length;
+  const avgL  = last.reduce((a,b)=>a+b,0)/last.length;
+  const diff  = avgL - avgF;
+  if(diff > 3)  return '📈';
+  if(diff < -3) return '📉';
+  return '➡️';
+}
+
+function exportGlobalCSV(){
+  const projFilter = (document.getElementById('global-filter-project')||{}).value || 'all';
+  const fromDate   = globalGetPeriodFilter();
+  const projs = projFilter === 'all' ? GLOBAL_PROJECTS : GLOBAL_PROJECTS.filter(p => p.key === projFilter);
+  let csv = '\uFEFFProjet;Agent;Matricule;Date;Score;Conforme;Evaluateur\n';
+  projs.forEach(p => {
+    const evals = globalGetEvalsForProject(p.key, fromDate);
+    evals.forEach(e => {
+      const conf = (e.score||0) >= p.threshold ? 'OUI' : 'NON';
+      const dateStr = e.date ? new Date(e.date).toLocaleDateString('fr-FR') : '—';
+      csv += `${p.label};${(e.agentName||'').replace(/;/g,',')};${e.agentMat||''};${dateStr};${(e.score||0).toFixed(1)};${conf};${(e.evaluateur||'').replace(/;/g,',')}\n`;
+    });
+  });
+  const blob = new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = `KYPER_global_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{URL.revokeObjectURL(url);document.body.removeChild(a);},100);
+  showToast('Export global CSV généré','ok');
+}
+</script>
+     Session presence via BroadcastChannel + localStorage
+     ════════════════════════════════════════════════════════════ -->
+<script>
+/* ───────────────────────────────────────────────────────────
+   CONSTANTES
+─────────────────────────────────────────────────────────── */
+const SUP_SESSION_KEY     = 'kyper_active_sessions';
+const SUP_HISTORY_KEY     = 'kyper_session_history';
+const SUP_PING_INTERVAL   = 20000;   // 20s ping heartbeat
+const SUP_TIMEOUT_MS      = 70000;   // 70s = considéré hors ligne
+const SUP_REFRESH_INTERVAL= 20000;   // 20s auto-refresh supervision panel
+const BC_CHANNEL_NAME     = 'kyper-presence';
+
+let _supSessionId   = null;
+let _supPingTimer   = null;
+let _supRefreshTimer= null;
+let _supBC          = null;
+
+/* ───────────────────────────────────────────────────────────
+   HELPERS LOCALSTORAGE SESSIONS
+─────────────────────────────────────────────────────────── */
+function supGetSessions(){
+  try{ return JSON.parse(localStorage.getItem(SUP_SESSION_KEY)||'[]'); }catch(e){ return []; }
+}
+function supSaveSessions(arr){
+  try{ localStorage.setItem(SUP_SESSION_KEY, JSON.stringify(arr)); }catch(e){}
+}
+function supGetHistory(){
+  try{ return JSON.parse(localStorage.getItem(SUP_HISTORY_KEY)||'[]'); }catch(e){ return []; }
+}
+function supSaveHistory(arr){
+  /* Garde 200 entrées max */
+  if(arr.length > 200) arr = arr.slice(arr.length - 200);
+  try{ localStorage.setItem(SUP_HISTORY_KEY, JSON.stringify(arr)); }catch(e){}
+}
+
+/* ───────────────────────────────────────────────────────────
+   BROADCAST CHANNEL (synchronisation inter-onglets)
+─────────────────────────────────────────────────────────── */
+function supInitBC(){
+  try{
+    _supBC = new BroadcastChannel(BC_CHANNEL_NAME);
+    _supBC.onmessage = (e) => {
+      if(e.data && e.data.type === 'presence_update'){
+        /* Rafraîchir la vue supervision si elle est visible */
+        const panel = document.getElementById('pm-panel-supervision');
+        if(panel && panel.classList.contains('active')){
+          supRefresh();
+        }
+        /* Mettre à jour le badge live dans le tab */
+        supUpdateLiveBadge();
+      }
+    };
+  } catch(e){ _supBC = null; }
+}
+function supBroadcast(type, data){
+  if(_supBC){
+    try{ _supBC.postMessage({ type, data, ts: Date.now() }); }catch(e){}
+  }
+}
+
+/* ───────────────────────────────────────────────────────────
+   GESTION SESSION COURANTE
+─────────────────────────────────────────────────────────── */
+function supRegisterSession(){
+  if(!window.currentUser) return;
+  _supSessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2,7);
+  const sessions = supGetSessions();
+  sessions.push({
+    sessionId : _supSessionId,
+    userId    : currentUser.id,
+    userName  : currentUser.name,
+    login     : currentUser.login,
+    role      : currentUser.role,
+    project   : window.currentProject || 'all',
+    loginAt   : new Date().toISOString(),
+    lastPing  : new Date().toISOString(),
+    logoutAt  : null,
+    online    : true,
+  });
+  supSaveSessions(sessions);
+  supBroadcast('presence_update', { action: 'login', sessionId: _supSessionId });
+  supUpdateLiveBadge();
+}
+
+function supPing(){
+  if(!_supSessionId) return;
+  const sessions = supGetSessions();
+  const idx = sessions.findIndex(s => s.sessionId === _supSessionId);
+  if(idx >= 0){
+    sessions[idx].lastPing = new Date().toISOString();
+    sessions[idx].online   = true;
+    sessions[idx].project  = window.currentProject || sessions[idx].project;
+    supSaveSessions(sessions);
+    supBroadcast('presence_update', { action: 'ping', sessionId: _supSessionId });
+  }
+  supUpdateLiveBadge();
+}
+
+function supUnregisterSession(){
+  if(!_supSessionId) return;
+  clearInterval(_supPingTimer);
+  const sessions = supGetSessions();
+  const idx = sessions.findIndex(s => s.sessionId === _supSessionId);
+  if(idx >= 0){
+    const s = sessions[idx];
+    s.logoutAt = new Date().toISOString();
+    s.online   = false;
+    /* Déplace dans l'historique */
+    const history = supGetHistory();
+    history.push({ ...s });
+    supSaveHistory(history);
+    sessions.splice(idx, 1);
+    supSaveSessions(sessions);
+    supBroadcast('presence_update', { action: 'logout', sessionId: _supSessionId });
+  }
+  _supSessionId = null;
+}
+
+/* Nettoyer les sessions zombie (lastPing trop vieux) */
+function supCleanZombies(){
+  const sessions = supGetSessions();
+  const now = Date.now();
+  const alive = [];
+  const history = supGetHistory();
+  sessions.forEach(s => {
+    const pingAge = now - new Date(s.lastPing).getTime();
+    if(pingAge > SUP_TIMEOUT_MS && s.online){
+      /* Marquer offline dans historique */
+      s.online    = false;
+      s.logoutAt  = s.logoutAt || new Date(new Date(s.lastPing).getTime() + 30000).toISOString();
+      s.zombie    = true;
+      history.push({ ...s });
+    } else {
+      alive.push(s);
+    }
+  });
+  supSaveSessions(alive);
+  supSaveHistory(history);
+}
+
+/* ───────────────────────────────────────────────────────────
+   UTILITAIRES D'AFFICHAGE
+─────────────────────────────────────────────────────────── */
+function supFormatDuration(ms){
+  if(ms < 0) ms = 0;
+  const h = Math.floor(ms / 3600000);
+  const m = Math.floor((ms % 3600000) / 60000);
+  const s = Math.floor((ms % 60000) / 1000);
+  if(h > 0) return `${h}h ${String(m).padStart(2,'0')}m`;
+  if(m > 0) return `${m}m ${String(s).padStart(2,'0')}s`;
+  return `${s}s`;
+}
+function supFormatTime(iso){
+  if(!iso) return '—';
+  const d = new Date(iso);
+  return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'}) + ' ' +
+         d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+function supInitials(name){
+  if(!name) return '?';
+  return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+}
+function supProjectLabel(proj){
+  const labels = { all:'Tous', ilek:'ILEK', fidelis:'FIDELIS', tmci:'TMCI', '':'—' };
+  return labels[proj] || (proj||'').toUpperCase();
+}
+function supIsOnline(session){
+  if(!session.online) return false;
+  const age = Date.now() - new Date(session.lastPing).getTime();
+  return age < SUP_TIMEOUT_MS;
+}
+
+/* ───────────────────────────────────────────────────────────
+   BADGE LIVE DANS LE TAB
+─────────────────────────────────────────────────────────── */
+function supUpdateLiveBadge(){
+  const badge = document.getElementById('sup-live-badge');
+  if(!badge) return;
+  supCleanZombies();
+  const sessions = supGetSessions();
+  const onlineCount = sessions.filter(s => supIsOnline(s)).length;
+  if(onlineCount > 0){
+    badge.textContent = onlineCount;
+    badge.style.display = '';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+/* ───────────────────────────────────────────────────────────
+   RENDER PANEL SUPERVISION
+─────────────────────────────────────────────────────────── */
+function supRefresh(){
+  supCleanZombies();
+  const sessions   = supGetSessions();
+  const history    = supGetHistory();
+  const filterSt   = (document.getElementById('sup-filter-status')  || {}).value  || 'all';
+  const filterProj = (document.getElementById('sup-filter-project') || {}).value  || 'all';
+  const now = Date.now();
+
+  /* KPIs */
+  const online  = sessions.filter(s => supIsOnline(s));
+  const offline = sessions.filter(s => !supIsOnline(s));
+  const kpiWrap = document.getElementById('sup-kpi-row');
+  if(kpiWrap){
+    kpiWrap.innerHTML = `
+      <div class="sup-kpi online">
+        <div class="sup-kpi-val">${online.length}</div>
+        <div class="sup-kpi-lbl">🟢 En ligne</div>
+      </div>
+      <div class="sup-kpi offline">
+        <div class="sup-kpi-val">${offline.length}</div>
+        <div class="sup-kpi-lbl">⚫ Déconnectés</div>
+      </div>
+      <div class="sup-kpi total">
+        <div class="sup-kpi-val">${sessions.length}</div>
+        <div class="sup-kpi-lbl">📊 Sessions actives</div>
+      </div>
+      <div class="sup-kpi">
+        <div class="sup-kpi-val" style="color:var(--brand-gold)">${history.length}</div>
+        <div class="sup-kpi-lbl">📋 Sessions terminées</div>
+      </div>`;
+  }
+
+  /* Filtrage sessions */
+  let filtered = [...sessions];
+  if(filterSt === 'online')  filtered = filtered.filter(s => supIsOnline(s));
+  if(filterSt === 'offline') filtered = filtered.filter(s => !supIsOnline(s));
+  if(filterProj !== 'all')   filtered = filtered.filter(s => (s.project||'').toLowerCase() === filterProj);
+
+  /* Tri : en ligne d'abord, puis par heure de connexion desc */
+  filtered.sort((a,b) => {
+    const ao = supIsOnline(a) ? 1 : 0;
+    const bo = supIsOnline(b) ? 1 : 0;
+    if(ao !== bo) return bo - ao;
+    return new Date(b.loginAt) - new Date(a.loginAt);
+  });
+
+  const wrap = document.getElementById('sup-sessions-wrap');
+  if(!wrap) return;
+
+  if(!filtered.length){
+    wrap.innerHTML = `<div class="sup-empty">Aucune session correspondant aux filtres.</div>`;
+  } else {
+    wrap.innerHTML = filtered.map(s => {
+      const isOnline   = supIsOnline(s);
+      const loginMs    = now - new Date(s.loginAt).getTime();
+      const durationTx = supFormatDuration(loginMs);
+      const roleColor  = s.role === 'Administrateur' ? 'var(--ok)' : s.role === 'Directeur Général' ? 'var(--accent)' : s.role === 'Chef de Projet' ? '#A78BFA' : 'var(--warn)';
+      const isSelf     = s.sessionId === _supSessionId;
+      return `
+      <div class="sup-session-row ${isOnline?'online':'offline'}">
+        <div class="sup-presence-dot ${isOnline?'online':'offline'}"></div>
+        <div class="sup-user-avatar ${isOnline?'':'offline'}">${supInitials(s.userName)}</div>
+        <div class="sup-user-info">
+          <div class="sup-user-name">${s.userName||s.login} ${isSelf?'<span style="font-size:10px;color:var(--muted)">(vous)</span>':''}</div>
+          <div class="sup-user-meta">
+            <code style="font-family:'DM Mono',monospace;font-size:10px">${s.login}</code>
+            <span style="color:${roleColor};font-weight:600;font-size:11px">${s.role}</span>
+            <span class="sup-badge-project">${supProjectLabel(s.project)}</span>
+            <span style="font-size:10px;color:var(--muted)">${isOnline?`🟢 Actif · ping il y a ${supFormatDuration(now - new Date(s.lastPing).getTime())}`:'⚫ Hors ligne'}</span>
+          </div>
+        </div>
+        <div class="sup-time-block">
+          <div class="sup-duration">${isOnline ? durationTx : '—'}</div>
+          <div class="sup-login-time">🔐 ${supFormatTime(s.loginAt)}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  /* Historique sessions */
+  const histWrap = document.getElementById('sup-history-wrap');
+  if(histWrap){
+    const histFiltered = [...history].reverse().slice(0, 30);
+    if(!histFiltered.length){
+      histWrap.innerHTML = `<div class="sup-empty">Aucune session terminée enregistrée.</div>`;
+    } else {
+      histWrap.innerHTML = `<div style="overflow-x:auto"><table class="data-table" style="width:100%">
+        <thead><tr>
+          <th>Utilisateur</th><th>Login</th><th>Rôle</th><th>Projet</th>
+          <th>Connexion</th><th>Déconnexion</th><th>Durée</th><th>Statut</th>
+        </tr></thead>
+        <tbody>${histFiltered.map(s => {
+          const dur = s.logoutAt ? supFormatDuration(new Date(s.logoutAt) - new Date(s.loginAt)) : '—';
+          return `<tr>
+            <td><strong>${s.userName||'—'}</strong></td>
+            <td style="font-family:'DM Mono',monospace;font-size:11px">${s.login||'—'}</td>
+            <td style="font-size:11px">${s.role||'—'}</td>
+            <td><span class="sup-badge-project">${supProjectLabel(s.project)}</span></td>
+            <td style="font-family:'DM Mono',monospace;font-size:11px;white-space:nowrap">${supFormatTime(s.loginAt)}</td>
+            <td style="font-family:'DM Mono',monospace;font-size:11px;white-space:nowrap">${supFormatTime(s.logoutAt)}</td>
+            <td style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600">${dur}</td>
+            <td>${s.zombie?'<span style="color:var(--warn)">⚡ Timeout</span>':'<span style="color:var(--muted)">🔒 Déconnexion</span>'}</td>
+          </tr>`;
+        }).join('')}</tbody>
+      </table></div>`;
+    }
+  }
+
+  /* Timestamp dernière actualisation */
+  const lastRef = document.getElementById('sup-last-refresh');
+  if(lastRef) lastRef.textContent = `Actualisé à ${new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}`;
+
+  supUpdateLiveBadge();
+}
+
+/* ───────────────────────────────────────────────────────────
+   EXPORT CSV RAPPORT SESSIONS
+─────────────────────────────────────────────────────────── */
+function supExportCSV(){
+  const sessions = supGetSessions();
+  const history  = supGetHistory();
+  const all      = [
+    ...sessions.map(s => ({ ...s, _type: 'Active' })),
+    ...history.map(s => ({ ...s, _type: 'Terminée' })),
+  ];
+  if(!all.length){ showToast('Aucune donnée à exporter','ko'); return; }
+  const now = Date.now();
+  let csv = '\uFEFFType;Utilisateur;Login;Rôle;Projet;Heure connexion;Heure déconnexion;Durée (min);Statut;Session ID\n';
+  all.forEach(s => {
+    const loginDt  = new Date(s.loginAt);
+    const logoutDt = s.logoutAt ? new Date(s.logoutAt) : null;
+    const durMin   = logoutDt
+      ? ((logoutDt - loginDt) / 60000).toFixed(1)
+      : supIsOnline(s) ? ((now - loginDt.getTime()) / 60000).toFixed(1) : '—';
+    const statut   = supIsOnline(s) ? 'En ligne' : s.zombie ? 'Timeout' : 'Déconnecté';
+    const fmt = (d) => d ? d.toLocaleDateString('fr-FR')+' '+d.toLocaleTimeString('fr-FR') : '—';
+    csv += `${s._type};${(s.userName||'').replace(/;/g,',')};${s.login||''};${s.role||''};${supProjectLabel(s.project)};${fmt(loginDt)};${fmt(logoutDt)};${durMin};${statut};${s.sessionId||''}\n`;
+  });
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `KYPER_rapport_sessions_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); document.body.removeChild(a); }, 100);
+  showToast(`Rapport exporté — ${all.length} sessions`, 'ok');
+}
+
+function supClearHistory(){
+  if(!confirm('Vider l\'historique des sessions terminées ? Cette action est irréversible.')) return;
+  supSaveHistory([]);
+  supRefresh();
+  showToast('Historique vidé','ok');
+}
+
+/* ───────────────────────────────────────────────────────────
+   INITIALISATION — HOOKS SUR LOGIN / LOGOUT
+─────────────────────────────────────────────────────────── */
+(function initSupervision(){
+  /* Hook initApp pour enregistrer la session */
+  const _origInitApp = window.initApp;
+  window.initApp = function(){
+    if(_origInitApp) _origInitApp.apply(this, arguments);
+    supInitBC();
+    supRegisterSession();
+    /* Démarrer heartbeat */
+    _supPingTimer = setInterval(supPing, SUP_PING_INTERVAL);
+    /* Auto-refresh du panel si ouvert */
+    _supRefreshTimer = setInterval(() => {
+      const panel = document.getElementById('pm-panel-supervision');
+      if(panel && panel.classList.contains('active')) supRefresh();
+      supUpdateLiveBadge();
+    }, SUP_REFRESH_INTERVAL);
+  };
+
+  /* Hook logout */
+  const _origLogout = window.doLogout;
+  window.doLogout = function(){
+    supUnregisterSession();
+    if(_supBC) try{ _supBC.close(); }catch(e){}
+    clearInterval(_supPingTimer);
+    clearInterval(_supRefreshTimer);
+    if(_origLogout) _origLogout.apply(this, arguments);
+  };
+
+  /* Désenregistrer si fermeture onglet */
+  window.addEventListener('beforeunload', () => supUnregisterSession());
+  window.addEventListener('visibilitychange', () => {
+    if(document.visibilityState === 'hidden') supPing();
+  });
+
+  /* Hook switchPmPanel — injecté après DOMContentLoaded pour capturer la version finale hookée */
+  document.addEventListener('DOMContentLoaded', () => {
+    const _hooked = window.switchPmPanel;
+    window.switchPmPanel = function(name){
+      if(_hooked) _hooked.apply(this, arguments);
+      if(name === 'supervision') setTimeout(supRefresh, 0);
+      if(name === 'historique-cx') setTimeout(pmRenderLoginLog, 0);
+    };
+  });
+
+  /* Hook applyRolePermissions pour gérer historique + supervision */
+  const _origApplyRolePermissions = window.applyRolePermissions;
+  window.applyRolePermissions = function(){
+    if(_origApplyRolePermissions) _origApplyRolePermissions.apply(this, arguments);
+    /* La logique est déjà dans applyRolePermissions v11 — rien à rajouter ici */
+  };
+
+  console.log('✅ KYPER v11 — Supervision temps réel chargée');
+})();
+</script>
 </body>
 </html>
