@@ -1235,27 +1235,6 @@ input,select,textarea{font-family:inherit}
 .um-role-badge.custom{background:rgba(167,139,250,.15);color:#A78BFA}
 .um-perm-count{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace}
 
-
-/* ─── Collaborateur card v11.2 ─── */
-.collab-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:border-color .2s,transform .2s;position:relative}
-.collab-card:hover{border-color:var(--project-color,var(--accent));transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
-.collab-card-risk-bar{position:absolute;top:0;left:0;right:0;height:3px}
-.collab-card-body{padding:16px}
-.collab-avatar{width:54px;height:54px;border-radius:50%;object-fit:cover;flex-shrink:0}
-.collab-avatar-placeholder{width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--project-color,var(--accent)),#A78BFA);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#0B0D16;flex-shrink:0}
-.collab-name{font-weight:700;font-size:14px;line-height:1.2}
-.collab-poste{font-size:11px;color:var(--muted);margin-top:2px}
-.collab-meta{font-size:10.5px;color:var(--muted);margin-top:3px;display:flex;flex-wrap:wrap;gap:4px 12px}
-.collab-tag{display:inline-flex;align-items:center;gap:4px;font-size:9.5px;padding:2px 7px;border-radius:10px;font-weight:600}
-.collab-actions{display:flex;gap:5px;margin-top:12px}
-.collab-btn{flex:1;padding:6px 4px;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:6px;font-size:11px;cursor:pointer;transition:all .15s;font-family:inherit;text-align:center}
-.collab-btn:hover{border-color:var(--accent);color:var(--accent)}
-.collab-btn.primary{background:var(--accent);border-color:var(--accent);color:#0B0D16;font-weight:700}
-.collab-btn.primary:hover{opacity:.85}
-.collab-btn.danger:hover{border-color:var(--ko);color:var(--ko)}
-/* Photo upload preview in modal */
-#collab-photo-preview:hover{border-color:var(--accent)!important}
-
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -1936,7 +1915,7 @@ input,select,textarea{font-family:inherit}
       <div class="page" <div class="page" id="page-collaborateur">
         <div class="page-header">
           <div class="page-title">👤 Gestion Collaborateurs</div>
-          <div class="page-sub">Fiche individuelle · Suivi performance · Accompagnement</div>
+          <div class="page-sub">Inscription, suivi de performance et accompagnement de chaque agent</div>
         </div>
         <div class="section-card">
           <div class="filter-section" id="fs-collaborateur">
@@ -1951,7 +1930,7 @@ input,select,textarea{font-family:inherit}
             <div class="filter-group"><label>Niveau de risque</label><select id="fco-risk" onchange="filterChanged('collaborateur')"><option value="">Tous niveaux</option><option value="high">🔴 Critique</option><option value="warn">🟡 À surveiller</option><option value="ok">🟢 Conforme</option></select></div>
             <div class="filter-group"><label>Statut</label><select id="fco-actif" onchange="filterChanged('collaborateur')"><option value="">Tous</option><option value="Actif">Actif</option><option value="En formation">En formation</option><option value="Suspendu">Suspendu</option></select></div>
             <button class="btn-reset" onclick="resetFilter('collaborateur')">↺ Réinitialiser</button>
-            <button class="btn-new" onclick="collabOpenModal(null)">➕ Nouveau Collaborateur</button>
+            <button class="btn-new" onclick="openModal('modal-new-agent')">+ Nouvel Agent</button>
           </div>
         </div>
         <div class="stat-row" id="collab-stats"></div>
@@ -11096,100 +11075,79 @@ function backToMsgList(){
 
 function renderMsgUsers(){
   if(!currentUser) return;
-  var list = document.getElementById('msg-users-list');
+  const list = document.getElementById("msg-users-list");
   if(!list) return;
-  var pres     = getPresence();
-  var onlineSet= new Set(Object.keys(pres));
-  var unread   = getUnread();
-  var allConvs = getAllConvs();
+  const pres = getPresence();
+  const onlineSet = new Set(Object.keys(pres));
+  const unread = getUnread();
+  const allConvs = getAllConvs();
 
-  /* Tous les utilisateurs enregistrés (dynamique) */
-  var allUsers = (typeof getUsers === 'function') ? getUsers() : USERS;
-  /* Contacts autorisés pour cet utilisateur */
-  var myContacts = msgGetMyContacts();
+  let items = USERS.filter(u => u.id !== currentUser.id).map(u => {
+    const isOnline = onlineSet.has(u.id);
+    const key = convKey(currentUser.id, u.id);
+    const conv = allConvs[key] || [];
+    const lastMsg = conv.length ? conv[conv.length - 1] : null;
+    const unreadKey = `${currentUser.id}|${u.id}`;
+    const unreadCount = unread[unreadKey] || 0;
+    return { u, isOnline, lastMsg, unreadCount, conv };
+  });
 
-  var items = allUsers
-    .filter(function(u){ return u.id !== currentUser.id && u.statut !== 'Suspendu'; })
-    .filter(function(u){ return myContacts.length === 0 || myContacts.includes(u.id); })
-    .map(function(u){
-      var isOnline = onlineSet.has(u.id) || onlineSet.has(u.login);
-      var key      = convKey(currentUser.id, u.id);
-      var conv     = allConvs[key] || [];
-      var lastMsg  = conv.length ? conv[conv.length-1] : null;
-      var ukey     = currentUser.id + '|' + u.id;
-      var unreadCount = unread[ukey] || 0;
-      return { u:u, isOnline:isOnline, lastMsg:lastMsg, unreadCount:unreadCount, conv:conv };
-    });
-
-  /* Filtre onglet */
-  if(_msgState.tab === 'convs'){
-    items = items.filter(function(i){ return i.conv.length > 0; });
+  /* Filtre selon onglet */
+  if(_msgState.tab === "convs"){
+    items = items.filter(i => i.conv.length > 0);
   }
-
-  /* Tri : non-lus > en ligne > alpha */
-  items.sort(function(a,b){
-    var au=a.unreadCount>0?1:0, bu=b.unreadCount>0?1:0;
-    if(bu-au) return bu-au;
-    if(a.isOnline!==b.isOnline) return b.isOnline-a.isOnline;
+  /* Tri : non-lus d'abord, puis en ligne, puis alphabétique */
+  items.sort((a,b) => {
+    if((b.unreadCount>0) - (a.unreadCount>0)) return (b.unreadCount>0) - (a.unreadCount>0);
+    if(a.isOnline !== b.isOnline) return b.isOnline - a.isOnline;
     return a.u.name.localeCompare(b.u.name);
   });
 
   if(!items.length){
-    list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:12px">'
-      +(_msgState.tab==='convs'?'Aucune conversation encore.'
-        :'Aucun contact. <br><button onclick="msgOpenContactsMgr()" style="margin-top:8px;padding:5px 12px;background:var(--accent);border:none;border-radius:6px;color:#0B0D16;font-size:11px;font-weight:700;cursor:pointer">+ Ajouter des contacts</button>')
-      +'</div>';
+    list.innerHTML = `<div style="padding:20px;text-align:center;color:var(--muted);font-size:12px">${_msgState.tab==="convs"?"Aucune conversation encore.":"Aucun collègue disponible."}</div>`;
     return;
   }
 
-  list.innerHTML = items.map(function(item){
-    var u=item.u, isOnline=item.isOnline, lastMsg=item.lastMsg, unreadCount=item.unreadCount;
-    var preview = lastMsg ? escapeHtml(lastMsg.text).slice(0,42)+(lastMsg.text.length>42?'…':'') : '';
-    var onlineDot = '<span style="width:8px;height:8px;border-radius:50%;background:'+(isOnline?'var(--ok)':'var(--border)')+';flex-shrink:0;margin-top:3px;display:inline-block"></span>';
-    return '<div class="msg-user-item" onclick="openMsgConv(\''+u.id+'\',\''+escapeHtml(u.name)+'\',\''+escapeHtml(u.role)+'\')" style="position:relative">'
-      +'<div class="msg-user-avatar" style="background:linear-gradient(135deg,var(--accent),#A78BFA)">'+u.name.charAt(0)+'</div>'
-      +'<div class="msg-user-info">'
-      +'<div class="msg-user-name" style="display:flex;align-items:center;gap:6px">'+escapeHtml(u.name)+onlineDot+'</div>'
-      +'<div class="msg-user-role" style="font-size:10px">'+escapeHtml(u.role||'')+(preview?' · <em style="color:var(--muted)">'+preview+'</em>':'')+'</div>'
-      +'</div>'
-      +(unreadCount?'<span class="msg-user-count">'+unreadCount+'</span>':'')
-      +'</div>';
-  }).join('');
+  list.innerHTML = items.map(({u, isOnline, lastMsg, unreadCount}) => {
+    const preview = lastMsg ? escapeHtml(lastMsg.text).slice(0, 42) + (lastMsg.text.length>42?"…":"") : "";
+    return `<div class="msg-user-item" onclick="openMsgConv('${u.id}')">
+      <div class="msg-user-avatar">${u.name.charAt(0)}<span class="online-dot ${isOnline?"":"off"}"></span></div>
+      <div class="msg-user-info">
+        <div class="msg-user-name">${escapeHtml(u.name)}</div>
+        <div class="msg-user-role">${escapeHtml(u.role)}${preview ? " · <span style='color:var(--muted)'>"+preview+"</span>" : ""}</div>
+      </div>
+      ${unreadCount ? `<span class="msg-user-count">${unreadCount}</span>` : ""}
+    </div>`;
+  }).join("");
 }
 
-function openMsgConv(userId, nameHint, roleHint){
+function openMsgConv(userId){
   _msgState.activeConv = userId;
-  var allUsers = (typeof getUsers === 'function') ? getUsers() : USERS;
-  var u = allUsers.find(function(x){ return x.id === userId; });
-  var name = u ? u.name : (nameHint || userId);
-  var role = u ? u.role : (roleHint || '');
-
-  document.getElementById('msg-view-list').style.display = 'none';
-  document.getElementById('msg-view-conv').style.display = 'flex';
-  document.getElementById('mch-avatar').textContent = name.charAt(0);
-  document.getElementById('mch-name').textContent = name;
-
-  var pres = getPresence();
-  var isOnline = !!(pres[userId] || (u && pres[u.login]));
-  var statusEl = document.getElementById('mch-status');
-  statusEl.textContent = isOnline ? '● En ligne' : '○ Hors ligne';
-  statusEl.style.color = isOnline ? '#22C55E' : '#64748B';
+  const u = USERS.find(x => x.id === userId);
+  if(!u) return;
+  document.getElementById("msg-view-list").style.display = "none";
+  document.getElementById("msg-view-conv").style.display = "flex";
+  document.getElementById("mch-avatar").textContent = u.name.charAt(0);
+  document.getElementById("mch-name").textContent = u.name;
+  const pres = getPresence();
+  const isOnline = !!pres[u.id];
+  const statusEl = document.getElementById("mch-status");
+  statusEl.textContent = isOnline ? "● En ligne" : "○ Hors ligne";
+  statusEl.style.color = isOnline ? "#22C55E" : "#64748B";
 
   /* Reset unread */
-  var unread = getUnread();
-  var ukey = currentUser.id + '|' + userId;
-  if(unread[ukey]){ delete unread[ukey]; saveUnread(unread); updateMsgBadge(); }
+  const unread = getUnread();
+  const unreadKey = `${currentUser.id}|${userId}`;
+  if(unread[unreadKey]){ delete unread[unreadKey]; saveUnread(unread); updateMsgBadge(); }
 
+  /* Render messages */
   renderMsgConv(userId);
 
-  /* Quick templates */
-  var qRow = document.getElementById('msg-quick-row');
-  qRow.innerHTML = MSG_TEMPLATES.map(function(t){
-    return '<button class="msg-quick-btn" onclick="sendMsgTemplate(\''+escapeHtml(t).replace(/'/g,"\\'")+'\')">'
-      +escapeHtml(t)+'</button>';
-  }).join('');
+  /* Render quick templates */
+  const qRow = document.getElementById("msg-quick-row");
+  qRow.innerHTML = MSG_TEMPLATES.map(t => `<button class="msg-quick-btn" onclick="sendMsgTemplate('${escapeHtml(t).replace(/'/g,"\\'")}')">${escapeHtml(t)}</button>`).join("");
 
-  setTimeout(function(){ var inp=document.getElementById('msg-input-text'); if(inp) inp.focus(); }, 100);
+  setTimeout(() => document.getElementById("msg-input-text").focus(), 100);
 }
 
 function renderMsgConv(userId){
@@ -12134,27 +12092,9 @@ console.log('✅ KYPER v8 — Modules chargés : Flash auto-comments, Image capt
     <div class="msg-title">💬 Messagerie KYPER<small id="msg-header-sub">Discuter avec vos collègues</small></div>
     <button onclick="toggleMsgPanel()" title="Fermer">✕</button>
   </div>
-  <div class="msg-tabs" style="display:flex;align-items:center;gap:4px">
+  <div class="msg-tabs">
     <button class="msg-tab active" data-mtab="users" onclick="switchMsgTab('users')">👥 Contacts</button>
     <button class="msg-tab" data-mtab="convs" onclick="switchMsgTab('convs')">💬 Conversations</button>
-    <button onclick="msgOpenContactsMgr()" title="Gérer les contacts" style="margin-left:auto;width:28px;height:28px;background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--muted);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">⚙</button>
-  </div>
-  <!-- Panneau gestion contacts -->
-  <div id="msg-contacts-mgr" style="display:none;flex-direction:column;flex:1;overflow:hidden">
-    <div style="padding:10px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
-      <button onclick="msgCloseContactsMgr()" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0">◀</button>
-      <span style="font-size:13px;font-weight:700;color:var(--text)">Gérer les contacts</span>
-    </div>
-    <div style="padding:8px 10px;border-bottom:1px solid var(--border)">
-      <input type="text" id="msg-contact-search" placeholder="🔎 Rechercher un utilisateur…" oninput="msgRenderContactList()"
-        style="width:100%;padding:7px 10px;background:var(--card);border:1px solid var(--border);border-radius:7px;color:var(--text);font-size:12px;outline:none">
-    </div>
-    <div id="msg-contact-list" style="overflow-y:auto;flex:1;padding:6px"></div>
-    <div style="padding:10px 12px;border-top:1px solid var(--border);display:flex;gap:6px">
-      <button onclick="msgSelectAllContacts(true)" style="flex:1;padding:6px;background:var(--surface);border:1px solid var(--border);border-radius:7px;color:var(--muted);font-size:11px;cursor:pointer">✅ Tous</button>
-      <button onclick="msgSelectAllContacts(false)" style="flex:1;padding:6px;background:var(--surface);border:1px solid var(--border);border-radius:7px;color:var(--muted);font-size:11px;cursor:pointer">☐ Aucun</button>
-      <button onclick="msgSaveContacts()" style="flex:1;padding:6px;background:var(--accent);border:none;border-radius:7px;color:#0B0D16;font-size:11px;font-weight:700;cursor:pointer">💾 Enregistrer</button>
-    </div>
   </div>
   <div id="msg-view-list" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
     <div class="msg-users-list" id="msg-users-list"></div>
@@ -13080,627 +13020,5 @@ window.logLogin = function(user, success, reason) {
 })();
 
 </script>
-
-<!-- ═══════════════════════════════════════════════════════
-     MODAL COLLABORATEUR — Créer / Modifier (v11.2)
-═══════════════════════════════════════════════════════ -->
-<div class="modal-overlay" id="modal-collab" class="modal-overlay" onclick="if(event.target===this)collabCloseModal()">
-  <div class="modal" style="max-width:680px;width:96%;margin:0 auto">
-    <div class="modal-header">
-      <h3 id="collab-modal-title">👤 Nouveau Collaborateur</h3>
-      <button class="modal-close" onclick="collabCloseModal()">✕</button>
-    </div>
-    <div class="modal-body" style="padding:20px 24px">
-      <input type="hidden" id="collab-edit-id">
-
-      <!-- Photo + Nom/Prénom -->
-      <div style="display:flex;gap:18px;align-items:flex-start;margin-bottom:18px">
-        <!-- Zone photo -->
-        <div style="flex-shrink:0;text-align:center">
-          <div id="collab-photo-preview" onclick="document.getElementById('collab-photo-input').click()"
-            style="width:90px;height:90px;border-radius:50%;background:var(--card);border:2px dashed var(--border);
-            display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;
-            font-size:32px;transition:border-color .2s;position:relative"
-            onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
-            <span id="collab-photo-icon">📷</span>
-            <img id="collab-photo-img" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;border-radius:50%">
-          </div>
-          <input type="file" id="collab-photo-input" accept="image/*" style="display:none" onchange="collabLoadPhoto(this)">
-          <div style="font-size:9px;color:var(--muted);margin-top:5px">Cliquer pour choisir</div>
-          <button type="button" id="collab-photo-remove" onclick="collabRemovePhoto()" style="display:none;margin-top:4px;padding:2px 8px;background:transparent;border:1px solid var(--border);border-radius:5px;font-size:10px;color:var(--ko);cursor:pointer">✕ Retirer</button>
-        </div>
-        <!-- Nom / Prénom -->
-        <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:10px">
-          <div class="form-group" style="margin-bottom:0">
-            <label>Prénom *</label>
-            <input type="text" id="collab-prenom" placeholder="Ex : Fatima">
-          </div>
-          <div class="form-group" style="margin-bottom:0">
-            <label>Nom *</label>
-            <input type="text" id="collab-nom" placeholder="Ex : Traoré">
-          </div>
-          <div class="form-group" style="margin-bottom:0">
-            <label>Matricule</label>
-            <input type="text" id="collab-mat" placeholder="Ex : EXC-0042">
-          </div>
-          <div class="form-group" style="margin-bottom:0">
-            <label>Date d'intégration *</label>
-            <input type="date" id="collab-date-integr">
-          </div>
-        </div>
-      </div>
-
-      <div style="height:1px;background:var(--border);margin:0 0 16px"></div>
-
-      <!-- Poste & Statut -->
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px">
-        <div class="form-group" style="margin-bottom:0">
-          <label>Poste *</label>
-          <select id="collab-poste">
-            <option value="">— Sélectionner —</option>
-            <option value="Téléconseiller">Téléconseiller</option>
-            <option value="Téléconseiller Senior">Téléconseiller Senior</option>
-            <option value="Chargé de Recouvrement">Chargé de Recouvrement</option>
-            <option value="Agent Satisfaction">Agent Satisfaction</option>
-            <option value="Agent Fidélisation">Agent Fidélisation</option>
-            <option value="Superviseur">Superviseur</option>
-            <option value="Chef de Projet">Chef de Projet</option>
-            <option value="Formateur">Formateur</option>
-            <option value="Moniteur Qualité">Moniteur Qualité</option>
-            <option value="Autre">Autre</option>
-          </select>
-        </div>
-        <div class="form-group" style="margin-bottom:0">
-          <label>Statut</label>
-          <select id="collab-statut">
-            <option value="Actif">🟢 Actif</option>
-            <option value="En formation">📚 En formation</option>
-            <option value="En période d'essai">⏳ Période d'essai</option>
-            <option value="En congé">🏖 En congé</option>
-            <option value="Suspendu">🔴 Suspendu</option>
-            <option value="Sorti">⬛ Sorti</option>
-          </select>
-        </div>
-        <div class="form-group" style="margin-bottom:0">
-          <label>Projet *</label>
-          <select id="collab-projet">
-            <option value="ilek">🟢 ILEK</option>
-            <option value="fidelis">🟣 FIDELIS</option>
-            <option value="tmci">🔴 TMCI</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Encadrement -->
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px">
-        <div class="form-group" style="margin-bottom:0">
-          <label>Superviseur</label>
-          <input type="text" id="collab-sup" placeholder="Nom du superviseur" list="collab-sup-list">
-          <datalist id="collab-sup-list"></datalist>
-        </div>
-        <div class="form-group" style="margin-bottom:0">
-          <label>Chef de Projet</label>
-          <input type="text" id="collab-cdp" placeholder="Nom du chef de projet" list="collab-cdp-list">
-          <datalist id="collab-cdp-list"></datalist>
-        </div>
-        <div class="form-group" style="margin-bottom:0">
-          <label>Formateur</label>
-          <input type="text" id="collab-form" placeholder="Nom du formateur" list="collab-form-list">
-          <datalist id="collab-form-list"></datalist>
-        </div>
-      </div>
-
-      <!-- Contact & Équipe -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
-        <div class="form-group" style="margin-bottom:0">
-          <label>Téléphone</label>
-          <input type="tel" id="collab-tel" placeholder="Ex : +225 07 00 00 00 00">
-        </div>
-        <div class="form-group" style="margin-bottom:0">
-          <label>Email professionnel</label>
-          <input type="email" id="collab-email" placeholder="prenom@exceliam.ci">
-        </div>
-      </div>
-
-      <div class="form-group" style="margin-bottom:14px">
-        <label>Équipe / Cellule</label>
-        <input type="text" id="collab-equipe" placeholder="Ex : Équipe Lead Chaud A">
-      </div>
-
-      <div class="form-group" style="margin-bottom:0">
-        <label>Notes / Observations</label>
-        <textarea id="collab-notes" rows="2" placeholder="Informations complémentaires, points d'attention…" style="resize:vertical"></textarea>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="collabCloseModal()">Annuler</button>
-      <button class="btn-confirm" onclick="collabSave()">💾 Enregistrer</button>
-    </div>
-  </div>
-</div>
-
-
-<script>
-/* ═══════════════════════════════════════════════════════
-   KYPER v11.2 — GESTION COLLABORATEURS
-   Fiche individuelle avec photo, encadrement, statut
-═══════════════════════════════════════════════════════ */
-var getCollabs  = function(){ return store.get('kyper_collabs',[]); };
-var saveCollabs = function(d){ store.set('kyper_collabs',d); };
-
-function collabLoadPhoto(input){
-  if(!input.files||!input.files[0]) return;
-  var r=new FileReader();
-  r.onload=function(e){
-    var img=document.getElementById('collab-photo-img');
-    var ico=document.getElementById('collab-photo-icon');
-    var rm=document.getElementById('collab-photo-remove');
-    if(img){img.src=e.target.result;img.style.display='block';}
-    if(ico) ico.style.display='none';
-    if(rm)  rm.style.display='inline-block';
-  };
-  r.readAsDataURL(input.files[0]);
-}
-
-function collabRemovePhoto(){
-  var img=document.getElementById('collab-photo-img');
-  var ico=document.getElementById('collab-photo-icon');
-  var rm=document.getElementById('collab-photo-remove');
-  var inp=document.getElementById('collab-photo-input');
-  if(img){img.src='';img.style.display='none';}
-  if(ico) ico.style.display='';
-  if(rm)  rm.style.display='none';
-  if(inp) inp.value='';
-}
-
-function collabFillDatalist(){
-  var users=(typeof getUsers==='function')?getUsers():[];
-  function fill(id,role){
-    var dl=document.getElementById(id);
-    if(!dl) return;
-    var list=role?users.filter(function(u){return u.role===role;}):users;
-    dl.innerHTML=list.map(function(u){return '<option value="'+u.name+'">';}).join('');
-  }
-  fill('collab-sup-list','Superviseur');
-  fill('collab-cdp-list','Chef de Projet');
-  fill('collab-form-list','Formateur');
-}
-
-function collabOpenModal(id){
-  var collabs=getCollabs();
-  var c=id?collabs.find(function(x){return x.id===id;}):null;
-
-  document.getElementById('collab-edit-id').value=c?c.id:'';
-  document.getElementById('collab-modal-title').textContent=c?'✏️ Modifier — '+c.prenom+' '+c.nom:'👤 Nouveau Collaborateur';
-  document.getElementById('collab-prenom').value=c?c.prenom:'';
-  document.getElementById('collab-nom').value=c?c.nom:'';
-  document.getElementById('collab-mat').value=c?(c.mat||''):'';
-  document.getElementById('collab-date-integr').value=c?(c.dateIntegr||''):new Date().toISOString().slice(0,10);
-  document.getElementById('collab-poste').value=c?(c.poste||''):'';
-  document.getElementById('collab-statut').value=c?(c.statut||'Actif'):'Actif';
-  document.getElementById('collab-projet').value=c?(c.projet||currentProject||'ilek'):(currentProject||'ilek');
-  document.getElementById('collab-sup').value=c?(c.superviseur||''):'';
-  document.getElementById('collab-cdp').value=c?(c.chefProjet||''):'';
-  document.getElementById('collab-form').value=c?(c.formateur||''):'';
-  document.getElementById('collab-tel').value=c?(c.tel||''):'';
-  document.getElementById('collab-email').value=c?(c.email||''):'';
-  document.getElementById('collab-equipe').value=c?(c.equipe||''):'';
-  document.getElementById('collab-notes').value=c?(c.notes||''):'';
-
-  /* Photo */
-  var img=document.getElementById('collab-photo-img');
-  var ico=document.getElementById('collab-photo-icon');
-  var rm=document.getElementById('collab-photo-remove');
-  var inp=document.getElementById('collab-photo-input');
-  if(inp) inp.value='';
-  if(c&&c.photo&&c.photo.startsWith('data:')){
-    if(img){img.src=c.photo;img.style.display='block';}
-    if(ico) ico.style.display='none';
-    if(rm)  rm.style.display='inline-block';
-  } else {
-    if(img){img.src='';img.style.display='none';}
-    if(ico) ico.style.display='';
-    if(rm)  rm.style.display='none';
-  }
-
-  collabFillDatalist();
-
-  /* Ouvrir avec le même mécanisme que tous les autres modals */
-  var mo=document.getElementById('modal-collab');
-  if(mo) mo.classList.add('open');
-}
-
-function collabCloseModal(){
-  var mo=document.getElementById('modal-collab');
-  if(mo) mo.classList.remove('open');
-}
-
-function collabSave(){
-  var id=document.getElementById('collab-edit-id').value;
-  var prenom=document.getElementById('collab-prenom').value.trim();
-  var nom=document.getElementById('collab-nom').value.trim();
-  var poste=document.getElementById('collab-poste').value;
-  var projet=document.getElementById('collab-projet').value;
-  var dateInt=document.getElementById('collab-date-integr').value;
-  if(!prenom||!nom){showToast('Prénom et Nom obligatoires','ko');return;}
-  if(!poste){showToast('Poste obligatoire','ko');return;}
-
-  var imgEl=document.getElementById('collab-photo-img');
-  var photo=(imgEl&&imgEl.style.display!=='none'&&imgEl.src&&imgEl.src.startsWith('data:'))?imgEl.src:'';
-
-  var obj={
-    id:id||('collab_'+Date.now()),
-    prenom:prenom, nom:nom, name:prenom+' '+nom,
-    mat:document.getElementById('collab-mat').value.trim(),
-    dateIntegr:dateInt, poste:poste,
-    statut:document.getElementById('collab-statut').value,
-    projet:projet,
-    superviseur:document.getElementById('collab-sup').value.trim(),
-    chefProjet:document.getElementById('collab-cdp').value.trim(),
-    formateur:document.getElementById('collab-form').value.trim(),
-    tel:document.getElementById('collab-tel').value.trim(),
-    email:document.getElementById('collab-email').value.trim(),
-    equipe:document.getElementById('collab-equipe').value.trim(),
-    notes:document.getElementById('collab-notes').value.trim(),
-    photo:photo,
-    updatedAt:new Date().toISOString(),
-  };
-
-  var collabs=getCollabs();
-  if(id){
-    var idx=collabs.findIndex(function(x){return x.id===id;});
-    if(idx>=0){obj.createdAt=collabs[idx].createdAt;collabs[idx]=obj;}
-    else{obj.createdAt=new Date().toISOString();collabs.push(obj);}
-  } else {
-    obj.createdAt=new Date().toISOString();
-    collabs.push(obj);
-    var agents=getAgents(projet);
-    if(!agents.find(function(a){return a.id===obj.id;})){
-      agents.push({id:obj.id,name:obj.name,mat:obj.mat,superviseur:obj.superviseur,statut:obj.statut});
-      saveAgents(projet,agents);
-    }
-  }
-  saveCollabs(collabs);
-  collabCloseModal();
-  renderCollabCards();
-  showToast((id?'Collaborateur modifié':'Ajouté — ')+prenom+' '+nom,'ok');
-}
-
-function collabDelete(id){
-  var collabs=getCollabs();
-  var c=collabs.find(function(x){return x.id===id;});
-  if(!c) return;
-  if(!confirm('Supprimer "'+c.prenom+' '+c.nom+'" ?\nSes évaluations restent conservées.')) return;
-  saveCollabs(collabs.filter(function(x){return x.id!==id;}));
-  renderCollabCards();
-  showToast('Collaborateur supprimé','ok');
-}
-
-function collabStatutColor(s){
-  return {
-    'Actif':'var(--ok)',
-    'En formation':'var(--accent)',
-    "En période d'essai":'var(--warn)',
-    'En congé':'var(--warn)',
-    'Suspendu':'var(--ko)',
-    'Sorti':'var(--muted)'
-  }[s]||'var(--muted)';
-}
-
-function renderCollabCards(){
-  var grid=document.getElementById('collab-grid');
-  if(!grid) return;
-  var collabs=getCollabs();
-  var allProj=['ilek','fidelis','tmci'];
-  var cIds=collabs.map(function(c){return c.id;});
-  var legacy=[];
-  allProj.forEach(function(p){
-    getAgents(p).forEach(function(a){
-      if(!cIds.includes(a.id)) legacy.push(Object.assign({},a,{projet:p,_legacy:true}));
-    });
-  });
-  var fCamp =(document.getElementById('fco-camp') ||{}).value||'';
-  var fSup  =(document.getElementById('fco-sup')  ||{}).value||'';
-  var fActif=(document.getElementById('fco-actif')||{}).value||'';
-  var all=[].concat(collabs,legacy);
-  if(fCamp)  all=all.filter(function(c){return(c.projet||c.project||'')===fCamp;});
-  if(fSup)   all=all.filter(function(c){return(c.superviseur||'')===fSup;});
-  if(fActif) all=all.filter(function(c){return(c.statut||'Actif')===fActif;});
-
-  /* Stats */
-  var statsEl=document.getElementById('collab-stats');
-  if(statsEl){
-    var actif=all.filter(function(c){return(c.statut||'Actif')==='Actif';}).length;
-    var form=all.filter(function(c){return c.statut==='En formation';}).length;
-    var susp=all.filter(function(c){return c.statut==='Suspendu'||c.statut==='Sorti';}).length;
-    statsEl.innerHTML=[
-      {val:all.length,lbl:'Collaborateurs',c:''},
-      {val:actif,lbl:'Actifs 🟢',c:'var(--ok)'},
-      {val:form,lbl:'En formation 📚',c:'var(--accent)'},
-      {val:susp,lbl:'Suspendus / Sortis',c:'var(--ko)'},
-    ].map(function(s){
-      return '<div class="stat-mini"><div class="stat-mini-val" style="color:'+(s.c||'var(--text)')+'">'+s.val+'</div><div class="stat-mini-lbl">'+s.lbl+'</div></div>';
-    }).join('');
-  }
-
-  if(!all.length){
-    grid.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="icon">👤</div>'
-      +'<p style="margin-bottom:12px">Aucun collaborateur enregistré</p>'
-      +'<button onclick="collabOpenModal(null)" style="padding:9px 20px;background:var(--accent);border:none;border-radius:8px;color:#0B0D16;font-weight:700;cursor:pointer">➕ Ajouter le premier collaborateur</button>'
-      +'</div>';
-    return;
-  }
-
-  grid.innerHTML=all.map(function(c){
-    var pj=c.projet||c.project||'ilek';
-    var evals=getEvals(pj).filter(function(e){return e.agentId===c.id;});
-    var coachings=(typeof getCoachings==='function')?getCoachings().filter(function(x){return x.agentId===c.id;}).length:0;
-    var debriefs=(typeof getDebriefs==='function')?getDebriefs().filter(function(x){return x.agentId===c.id;}).length:0;
-    var p=PROJECTS[pj]; var thr=p?p.threshold:75;
-    var moy=evals.length?(evals.reduce(function(s,e){return s+e.score;},0)/evals.length):null;
-    var confok=moy!==null?evals.filter(function(e){return e.score>=thr;}).length:0;
-    /* Risque */
-    var risk='warn';
-    if(evals.length){
-      if(moy>=thr) risk='ok';
-      else{ var l3=evals.slice(-3); risk=l3.every(function(e){return e.score<thr;})?'high':'warn'; }
-    }
-    var rc=risk==='high'?'var(--ko)':risk==='warn'?'var(--warn)':'var(--ok)';
-    var rl=risk==='high'?'🔴 Critique':risk==='warn'?'🟡 À surveiller':'🟢 Conforme';
-    var statut=c.statut||'Actif';
-    var sc={
-      'Actif':'#22C55E','En formation':'#00E5FF',
-      "En période d'essai":'#F59E0B','En congé':'#F59E0B',
-      'Suspendu':'#EF4444','Sorti':'#6B7280'
-    }[statut]||'#6B7280';
-    var pLabel=PROJECTS[pj]?PROJECTS[pj].name:pj.toUpperCase();
-
-    /* Dates */
-    var integrStr=c.dateIntegr?new Date(c.dateIntegr).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'}):'—';
-    var now=new Date();
-    var anciennete='—';
-    if(c.dateIntegr){
-      var d=new Date(c.dateIntegr);
-      var mths=(now.getFullYear()-d.getFullYear())*12+(now.getMonth()-d.getMonth());
-      anciennete=mths<1?'< 1 mois':mths<12?mths+' mois':Math.floor(mths/12)+'a '+(mths%12)+'m';
-    }
-
-    /* Dernière éval */
-    var lastEval=evals.length?evals[evals.length-1]:null;
-    var lastEvalStr=lastEval?new Date(lastEval.date).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'}):'Aucune';
-    var daysSince=lastEval?Math.floor((Date.now()-new Date(lastEval.date).getTime())/86400000):null;
-
-    /* Mini barres des 5 dernières évals */
-    var bars='';
-    if(evals.length){
-      bars='<div style="display:flex;gap:3px;align-items:flex-end;height:24px;margin-bottom:6px">';
-      evals.slice(-8).forEach(function(e){
-        var ec=e.score>=thr?'var(--ok)':e.score>=thr*.85?'var(--warn)':'var(--ko)';
-        var h=Math.max(4,Math.round(e.score*.24));
-        bars+='<div title="'+e.score.toFixed(1)+'% — '+e.date.slice(0,10)+'" style="flex:1;height:'+h+'px;background:'+ec+';border-radius:2px 2px 0 0;align-self:flex-end"></div>';
-      });
-      bars+='</div>';
-    }
-
-    /* Avatar */
-    var av='';
-    if(c.photo&&c.photo.startsWith('data:')){
-      av='<img style="width:58px;height:58px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid '+rc+'" src="'+c.photo+'" alt="'+c.name+'">';
-    } else {
-      var ini=((c.prenom?c.prenom+' '+c.nom:c.name)||'?').split(' ').map(function(w){return w[0]||'';}).slice(0,2).join('').toUpperCase();
-      av='<div style="width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#A78BFA);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;color:#0B0D16;flex-shrink:0;border:2px solid '+rc+'">'+ini+'</div>';
-    }
-
-    /* Encadrement */
-    var enc=[];
-    if(c.superviseur) enc.push('<span title="Superviseur">👔 '+c.superviseur+'</span>');
-    if(c.chefProjet)  enc.push('<span title="Chef de Projet">📊 '+c.chefProjet+'</span>');
-    if(c.formateur)   enc.push('<span title="Formateur">📚 '+c.formateur+'</span>');
-
-    /* Boutons */
-    var btns=c._legacy
-      ?'<button class="collab-btn primary" onclick="goPage(\'evaluation\')" style="flex:1">📋 Évaluer</button>'
-      :'<button class="collab-btn" onclick="collabOpenModal(\''+c.id+'\')" title="Modifier la fiche" style="flex:1">✏️ Modifier</button>'
-       +'<button class="collab-btn primary" onclick="goPage(\'evaluation\')" title="Nouvelle évaluation" style="flex:1">📋 Évaluer</button>'
-       +'<button class="collab-btn" onclick="collabDelete(\''+c.id+'\')" title="Supprimer" style="color:var(--ko);flex:0 0 auto;padding:6px 10px">🗑</button>';
-
-    return '<div class="collab-card" style="border-left:3px solid '+rc+'">'
-      /* ── Top : avatar + identité + statut ── */
-      +'<div class="collab-card-body">'
-      +'<div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px">'
-      +av
-      +'<div style="flex:1;min-width:0">'
-      +'<div style="font-weight:700;font-size:14px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+(c.prenom?c.prenom+' '+c.nom:c.name)+'</div>'
-      +'<div style="font-size:11px;color:var(--muted);margin-top:2px">'+(c.poste||'Agent')+' · <span style="color:var(--accent)">'+pLabel+'</span></div>'
-      +(c.mat?'<div style="font-size:10px;color:var(--muted);margin-top:1px">🎫 '+c.mat+'</div>':'')
-      +(c.equipe?'<div style="font-size:10px;color:var(--muted)">👥 '+c.equipe+'</div>':'')
-      +'</div>'
-      +'<div style="text-align:right;flex-shrink:0">'
-      +'<span style="font-size:9.5px;font-weight:700;padding:3px 9px;border-radius:20px;color:'+sc+';background:rgba(0,0,0,.18);white-space:nowrap;display:block;margin-bottom:4px">'+statut+'</span>'
-      +'<span style="font-size:9px;font-weight:700;color:'+rc+'">'+rl+'</span>'
-      +'</div>'
-      +'</div>'
-
-      /* ── Encadrement ── */
-      +(enc.length?'<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">'+enc.map(function(e){return '<span style="font-size:10px;background:var(--surface);border:1px solid var(--border);padding:2px 8px;border-radius:8px;color:var(--muted)">'+e+'</span>';}).join('')+'</div>':'')
-
-      /* ── Infos intégration ── */
-      +'<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px;padding:8px 10px;background:var(--surface);border-radius:8px;border:1px solid var(--border)">'
-      +'<div style="text-align:center;flex:1"><div style="font-size:10px;color:var(--muted);margin-bottom:2px">Intégration</div><div style="font-size:11px;font-weight:600">'+integrStr+'</div></div>'
-      +'<div style="text-align:center;flex:1;border-left:1px solid var(--border);padding-left:14px"><div style="font-size:10px;color:var(--muted);margin-bottom:2px">Ancienneté</div><div style="font-size:11px;font-weight:600">'+anciennete+'</div></div>'
-      +(c.tel?'<div style="text-align:center;flex:1;border-left:1px solid var(--border);padding-left:14px"><div style="font-size:10px;color:var(--muted);margin-bottom:2px">Téléphone</div><div style="font-size:11px;font-weight:600">'+c.tel+'</div></div>':'')
-      +(c.email?'<div style="text-align:center;flex:1;border-left:1px solid var(--border);padding-left:14px;min-width:0"><div style="font-size:10px;color:var(--muted);margin-bottom:2px">Email</div><div style="font-size:10px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+c.email+'</div></div>':'')
-      +'</div>'
-
-      /* ── KPIs performance ── */
-      +'<div style="display:flex;gap:0;margin-bottom:8px;border:1px solid var(--border);border-radius:8px;overflow:hidden">'
-      +'<div style="flex:1;text-align:center;padding:7px 4px;border-right:1px solid var(--border)"><div style="font-size:16px;font-weight:700;color:'+rc+';font-family:\'DM Mono\',monospace">'+(moy!==null?moy.toFixed(1)+'%':'—')+'</div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Moy.</div></div>'
-      +'<div style="flex:1;text-align:center;padding:7px 4px;border-right:1px solid var(--border)"><div style="font-size:16px;font-weight:700;font-family:\'DM Mono\',monospace">'+evals.length+'</div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Évals</div></div>'
-      +'<div style="flex:1;text-align:center;padding:7px 4px;border-right:1px solid var(--border)"><div style="font-size:16px;font-weight:700;color:var(--ok);font-family:\'DM Mono\',monospace">'+confok+'</div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Conformes</div></div>'
-      +'<div style="flex:1;text-align:center;padding:7px 4px;border-right:1px solid var(--border)"><div style="font-size:16px;font-weight:700;font-family:\'DM Mono\',monospace">'+coachings+'</div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Coaching</div></div>'
-      +'<div style="flex:1;text-align:center;padding:7px 4px"><div style="font-size:12px;font-weight:600;color:'+(daysSince!==null&&daysSince>14?'var(--warn)':'var(--muted)')+'">'+lastEvalStr+'</div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Dern. éval</div></div>'
-      +'</div>'
-
-      /* ── Mini barres tendance ── */
-      +bars
-
-      /* ── Notes ── */
-      +(c.notes?'<div style="font-size:10.5px;color:var(--muted);font-style:italic;margin-bottom:8px;padding:6px 8px;background:var(--surface);border-radius:6px;border-left:2px solid var(--border)">💬 '+c.notes+'</div>':'')
-
-      /* ── Boutons ── */
-      +'<div style="display:flex;gap:6px">'+btns+'</div>'
-      +'</div></div>';
-  }).join('');
-}
-
-/* Auto-déclencher au changement de page */
-(function(){
-  var _og=window.goPage;
-  window.goPage=function(name){
-    if(_og) _og.apply(this,arguments);
-    if(name==='collaborateur') setTimeout(renderCollabCards,60);
-  };
-  /* Aussi au chargement de la page collaborateur via renderAll */
-  var _or=window.renderCollaborateur;
-  window.renderCollaborateur=function(){
-    try{if(_or) _or.apply(this,arguments);}catch(e){}
-    renderCollabCards();
-  };
-})();
-</script>
-
-
-<script>
-/* ═══════════════════════════════════════════════════════
-   KYPER v11.2 — GESTION CONTACTS MESSAGERIE
-   Chaque utilisateur choisit ses contacts visibles
-═══════════════════════════════════════════════════════ */
-
-/* Storage : contacts par utilisateur */
-function msgContactsKey(){
-  return 'kyper_msg_contacts_' + (currentUser ? currentUser.id : 'anon');
-}
-function msgGetMyContacts(){
-  return store.get(msgContactsKey(), []);  /* [] = tous visibles */
-}
-function msgSaveMyContacts(ids){
-  store.set(msgContactsKey(), ids);
-}
-
-/* ── Ouvrir le panneau gestion contacts ── */
-function msgOpenContactsMgr(){
-  var listEl = document.getElementById('msg-view-list');
-  var convEl = document.getElementById('msg-view-conv');
-  var mgrEl  = document.getElementById('msg-contacts-mgr');
-  if(!mgrEl) return;
-  if(listEl) listEl.style.display = 'none';
-  if(convEl) convEl.style.display = 'none';
-  mgrEl.style.display = 'flex';
-  msgRenderContactList();
-}
-
-/* ── Fermer le panneau ── */
-function msgCloseContactsMgr(){
-  var mgrEl = document.getElementById('msg-contacts-mgr');
-  var listEl= document.getElementById('msg-view-list');
-  if(mgrEl) mgrEl.style.display = 'none';
-  if(listEl){ listEl.style.display = 'flex'; renderMsgUsers(); }
-}
-
-/* ── Rendre la liste de tous les utilisateurs avec cases à cocher ── */
-function msgRenderContactList(){
-  var el = document.getElementById('msg-contact-list');
-  if(!el || !currentUser) return;
-
-  var allUsers  = (typeof getUsers === 'function') ? getUsers() : USERS;
-  var myContacts= msgGetMyContacts();   /* [] = tous */
-  var pres      = getPresence();
-  var search    = (document.getElementById('msg-contact-search')||{}).value || '';
-  search = search.toLowerCase().trim();
-
-  var filtered = allUsers.filter(function(u){
-    if(u.id === currentUser.id) return false;
-    if(u.statut === 'Suspendu') return false;
-    if(search && u.name.toLowerCase().indexOf(search) < 0
-              && (u.role||'').toLowerCase().indexOf(search) < 0) return false;
-    return true;
-  });
-
-  if(!filtered.length){
-    el.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted);font-size:12px">Aucun utilisateur trouvé.</div>';
-    return;
-  }
-
-  el.innerHTML = filtered.map(function(u){
-    /* checked si: myContacts vide (= tous) OU u.id dans la liste */
-    var checked = myContacts.length === 0 || myContacts.includes(u.id);
-    var isOnline = !!(pres[u.id] || pres[u.login]);
-    var ini = u.name.charAt(0).toUpperCase();
-    return '<label style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer;transition:background .15s" '
-      +'onmouseover="this.style.background=\'rgba(255,255,255,.04)\'" onmouseout="this.style.background=\'\'">'
-      +'<input type="checkbox" id="msgc-'+u.id+'" data-uid="'+u.id+'" '+(checked?'checked':'')
-      +' style="width:15px;height:15px;accent-color:var(--accent);cursor:pointer;flex-shrink:0">'
-      +'<div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#A78BFA);'
-      +'display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#0B0D16;flex-shrink:0;position:relative">'
-      +ini
-      +'<span style="position:absolute;bottom:0;right:0;width:9px;height:9px;border-radius:50%;border:2px solid var(--surface);background:'
-      +(isOnline?'var(--ok)':'var(--border)')+'"></span>'
-      +'</div>'
-      +'<div style="flex:1;min-width:0">'
-      +'<div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+escapeHtml(u.name)+'</div>'
-      +'<div style="font-size:10.5px;color:var(--muted)">'+escapeHtml(u.role||'')
-      +' · <span style="color:'+(isOnline?'var(--ok)':'var(--muted)')+'">'+(isOnline?'En ligne':'Hors ligne')+'</span>'
-      +(u.login?' · <span style="font-family:\'DM Mono\',monospace;font-size:9.5px">'+escapeHtml(u.login)+'</span>':'')
-      +'</div>'
-      +'</div>'
-      +'</label>';
-  }).join('');
-}
-
-/* ── Tout cocher / décocher ── */
-function msgSelectAllContacts(state){
-  document.querySelectorAll('#msg-contact-list input[type=checkbox]').forEach(function(cb){
-    cb.checked = state;
-  });
-}
-
-/* ── Sauvegarder les contacts sélectionnés ── */
-function msgSaveContacts(){
-  var checked = [];
-  var allUsers = (typeof getUsers==='function') ? getUsers() : USERS;
-  var total    = allUsers.filter(function(u){ return u.id !== currentUser.id && u.statut !== 'Suspendu'; }).length;
-  document.querySelectorAll('#msg-contact-list input[type=checkbox]:checked').forEach(function(cb){
-    checked.push(cb.dataset.uid);
-  });
-  /* Si tous cochés → stocker [] (= montrer tous) */
-  if(checked.length >= total){
-    msgSaveMyContacts([]);
-    showToast('Contacts mis à jour — tous les utilisateurs visibles','ok');
-  } else {
-    msgSaveMyContacts(checked);
-    showToast('Contacts mis à jour — '+checked.length+' contact(s) sélectionné(s)','ok');
-  }
-  msgCloseContactsMgr();
-}
-
-/* ── Mise à jour de la presence avec login en plus de l'id ── */
-(function patchPresence(){
-  var _origSend = window.sendPresencePing;
-  window.sendPresencePing = function(){
-    if(!currentUser) return;
-    var pres = getPresence();
-    var now  = Date.now();
-    /* Stocker à la fois sur id ET sur login pour compatibilité */
-    pres[currentUser.id] = { name:currentUser.name, role:currentUser.role, login:currentUser.login, lastPing:now };
-    if(currentUser.login) pres[currentUser.login] = pres[currentUser.id];
-    store.set(MSG_STORAGE_PRESENCE, pres);
-    /* BroadcastChannel heartbeat */
-    if(typeof _msgBC !== 'undefined' && _msgBC){
-      try{ _msgBC.postMessage({type:'ping', userId:currentUser.id, login:currentUser.login, name:currentUser.name, ts:now}); }catch(e){}
-    }
-  };
-})();
-</script>
-
 </body>
 </html>
